@@ -65,6 +65,9 @@ try {
   }
   console.log("Snapshot del índice Git (tree, no commit): " + tree);
   console.log("Blobs materializados y cotejados sin filtros: " + files);
+  // Rechazar snapshots incompletos antes de instalar sus dependencias.
+  // Los snapshots completos conservan íntegro el gate posterior.
+  checkProductInputs(temp);
   // Dependencias se instalan por lock en el snapshot, sin scripts de instalación.
   // No se enlazan node_modules del working tree ni se modifica su cliente Prisma.
   if (existsSync(join(temp, "package.json"))) {
@@ -103,3 +106,4 @@ try {
 } finally {
   rmSync(temp, { recursive: true, force: true });
 }
+import { checkProductInputs } from "./check-product.mjs";

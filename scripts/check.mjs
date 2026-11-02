@@ -5,9 +5,10 @@ import { readdirSync, existsSync } from "node:fs";
 import { validateContract } from "./validate-contract.mjs";
 import { checkArtifacts } from "./check-artifacts.mjs";
 import { checkArchitecture } from "./check-architecture.mjs";
-import { checkProduct } from "./check-product.mjs";
+import { checkProduct, checkProductInputs } from "./check-product.mjs";
 const home = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const project = resolve(process.argv[2] ?? "../proyecto-ecclesia");
+checkProductInputs(project);
 function run(args) {
   const env = { ...process.env, ECCLESIA_PROJECT: project };
   // node:test marks child processes. A real hook spawned by a regression must

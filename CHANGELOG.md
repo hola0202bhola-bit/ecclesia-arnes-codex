@@ -1,5 +1,11 @@
 # Incremento Iglesias web/catálogos — 1 de noviembre de 2026
 
+## Patrimonio — 2 de noviembre de 2026
+
+- Gate de cuatro suites con regresiones semánticas obligatorias, migración/vistas y smoke de patrimonio/ranking.
+- Contratos ejecutables de patrimonio, sin ampliar matriz de roles; negativos de DTO y concurrencia.
+- Hook rechaza suite/migración/formulario ausentes y fórmula INAH alterada en el índice aunque working tree esté correcto. [Alcance](docs/incremento-patrimonio.md).
+
 - Gate exige suite de gestión EJS/catálogos, migración aditiva, fuentes oficiales con manifest y vistas nuevas. Conserva las regresiones de Iglesias e Identidad.
 - Hook rechaza suite, manifest o formulario eliminados solo del índice; positivo exige las tres suites PostgreSQL.
 - Contrato de consulta pública exige fuente/versión/alcance y evita simular versiones mutables de registros oficiales; política de permisos intacta. Smoke del servidor añade catálogos y gestión anónima rechazada.

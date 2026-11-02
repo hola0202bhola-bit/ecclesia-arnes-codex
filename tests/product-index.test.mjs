@@ -18,7 +18,7 @@ const source =
   fileURLToPath(new URL("../../proyecto-ecclesia", import.meta.url));
 test(
   "H02/H03 índice de producto: positivo y rechazos preparados sin usar working tree",
-  { timeout: 600000 },
+  { timeout: 1200000 },
   () => {
     const root = mkdtempSync(join(tmpdir(), "ecclesia-product-index-"));
     const repo = join(root, "project");
@@ -64,6 +64,7 @@ test(
         assert.ok(Number(output.match(/Tests\s+(\d+) passed/)?.[1]) >= 100);
         assert.match(output, /identidad\.test\.ts/);
         assert.match(output, /gestion-iglesias\.test\.ts/);
+        assert.match(output, /patrimonio\.test\.ts/);
         assert.match(output, /PostgreSQL real aislado/);
       }
     }
@@ -125,6 +126,9 @@ test(
         "tests/gestion-iglesias.test.ts",
         "prisma/fuentes/manifest.json",
         "views/iglesia-formulario.ejs",
+        "tests/patrimonio.test.ts",
+        "prisma/migrations/202611020001_patrimonio/migration.sql",
+        "views/objeto-formulario.ejs",
       ]) {
         ok(exec(["rm", "--cached", "-f", path]));
         hook(
@@ -146,6 +150,21 @@ test(
         /syntax error|P3018/i,
       );
       ok(exec(["add", sqlPath]));
+      const indicePath = "src/modules/patrimonio/domain/patrimonio.ts";
+      const indice = readFileSync(join(repo, indicePath), "utf8");
+      assert.match(indice, /bonoInahDecimas: 50/);
+      writeFileSync(
+        join(repo, indicePath),
+        indice.replace("bonoInahDecimas: 50", "bonoInahDecimas: 40"),
+      );
+      ok(exec(["add", indicePath]));
+      writeFileSync(join(repo, indicePath), indice);
+      hook(
+        "fórmula staged alterada con working tree correcto",
+        false,
+        /reproduce exactamente P074/,
+      );
+      ok(exec(["add", indicePath]));
       const pkgPath = join(repo, "package.json");
       const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
       pkg.scripts.test = 'node -e "process.exit(0)"';

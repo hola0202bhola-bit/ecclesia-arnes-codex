@@ -3,10 +3,10 @@ import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { sourceFiles } from "./check-architecture.mjs";
-export function checkProduct(project) {
+export function checkProductInputs(project) {
   project = resolve(project);
   const files = sourceFiles(project);
-  if (!files.length) return { implemented: false };
+  if (!files.length) return files;
   for (const required of [
     "package.json",
     "package-lock.json",
@@ -16,6 +16,11 @@ export function checkProduct(project) {
     "tests/iglesias.test.ts",
     "tests/identidad.test.ts",
     "tests/gestion-iglesias.test.ts",
+    "tests/patrimonio.test.ts",
+    "prisma/migrations/202611020001_patrimonio/migration.sql",
+    "views/patrimonio.ejs",
+    "views/objeto-formulario.ejs",
+    "views/ranking-patrimonial.ejs",
     "prisma/fuentes/manifest.json",
     "prisma/fuentes/inegi-estados.json",
     ...Array.from(
@@ -37,6 +42,12 @@ export function checkProduct(project) {
   ])
     if (!existsSync(join(project, required)))
       throw new Error("Pipeline de producto incompleto: falta " + required);
+  return files;
+}
+export function checkProduct(project) {
+  project = resolve(project);
+  const files = checkProductInputs(project);
+  if (!files.length) return { implemented: false };
   if (!existsSync(join(project, "node_modules/typescript/bin/tsc")))
     throw new Error(
       "Instalar dependencias de producto con npm ci antes del check",
@@ -72,6 +83,7 @@ export function checkProduct(project) {
     "tests/iglesias.test.ts",
     "tests/identidad.test.ts",
     "tests/gestion-iglesias.test.ts",
+    "tests/patrimonio.test.ts",
     "prisma/seed.ts",
   ]);
   run(["node_modules/eslint/bin/eslint.js", "src", "tests", "prisma/seed.ts"]);
@@ -122,6 +134,7 @@ export function checkProduct(project) {
     ["iglesias.test.ts", 70],
     ["identidad.test.ts", 30],
     ["gestion-iglesias.test.ts", 49],
+    ["patrimonio.test.ts", 80],
   ]) {
     const result = report.testResults?.find((r) =>
       r.name.replaceAll("\\", "/").endsWith("/tests/" + suite),
@@ -132,6 +145,24 @@ export function checkProduct(project) {
         minimum
     )
       throw new Error("Suite obligatoria incompleta: " + suite);
+  }
+  const patrimonio = report.testResults.find((r) =>
+    r.name.replaceAll("\\", "/").endsWith("/tests/patrimonio.test.ts"),
+  );
+  for (const regla of [
+    "reproduce exactamente P074",
+    "dos cambios simultáneos",
+    "fallo de auditoría",
+    "misma pieza vigente",
+    "CSRF",
+    "actualiza esquema previo",
+  ]) {
+    if (
+      !patrimonio.assertionResults.some(
+        (r) => r.status === "passed" && r.fullName.includes(regla),
+      )
+    )
+      throw new Error("Regresión patrimonial obligatoria ausente: " + regla);
   }
   const coverage = JSON.parse(
     readFileSync(join(project, "coverage/coverage-summary.json"), "utf8"),

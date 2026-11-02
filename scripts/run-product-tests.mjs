@@ -160,8 +160,31 @@ try {
       body: "{}",
     });
     assert.equal(denied.status, 401);
+    const ranking = await fetch(
+      `http://127.0.0.1:${httpPort}/api/v1/ranking-patrimonial`,
+    );
+    assert.equal(ranking.status, 200);
+    assert.ok(Array.isArray((await ranking.json()).data));
+    const rankingWeb = await fetch(
+      `http://127.0.0.1:${httpPort}/ranking-patrimonial`,
+    );
+    assert.equal(rankingWeb.status, 200);
+    assert.match(await rankingWeb.text(), /Iglesias reconocidas/);
+    const iglesias = await (
+      await fetch(`http://127.0.0.1:${httpPort}/api/v1/iglesias?estadoClave=21`)
+    ).json();
+    const iglesiaId = iglesias.data[0].id;
+    const objetos = await fetch(
+      `http://127.0.0.1:${httpPort}/api/v1/iglesias/${iglesiaId}/objetos`,
+    );
+    assert.equal(objetos.status, 200);
+    assert.equal((await objetos.json()).calculo.criterioId, "caso-v1");
+    const patrimonioPrivado = await fetch(
+      `http://127.0.0.1:${httpPort}/personal/patrimonio/${iglesiaId}`,
+    );
+    assert.equal(patrimonioPrivado.status, 401);
     console.log(
-      "Smoke HTTP del servidor compilado: API/EJS/login/catálogos 200; usuarios, gestión web y alta anónima 401.",
+      "Smoke HTTP del servidor compilado: API/EJS/login/catálogos/patrimonio/ranking 200; usuarios, gestión web/patrimonio y alta anónima 401.",
     );
   } finally {
     if (web.exitCode === null) {
@@ -189,6 +212,10 @@ try {
           anonymousChurchManagement: 401,
           states: 32,
           pueblaMunicipalities: 217,
+          ranking: 200,
+          rankingWeb: 200,
+          patrimonio: 200,
+          anonymousHeritageManagement: 401,
           browserOrMobileTest: false,
         },
       },
