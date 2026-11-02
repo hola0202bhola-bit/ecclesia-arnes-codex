@@ -1,0 +1,517 @@
+{
+  "description": "Línea base de seguridad del contrato revisión 01, preservada en revisión 02; permisos ampliados pendientes PC-19. No acredita autorización de servidor.",
+  "schemes": {
+    "PersonalJWT": {
+      "type": "http",
+      "scheme": "bearer",
+      "bearerFormat": "JWT",
+      "description": "Personal con expiración y ámbito, permisos adicionales PC-19."
+    },
+    "SolicitudClave": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "X-Solicitud-Clave",
+      "description": "Clave de seguimiento limitada al folio de la ruta; nunca URL o logs."
+    }
+  },
+  "operations": {
+    "POST /auth/login": {
+      "operationId": "identidad_login",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "GET /usuarios": {
+      "operationId": "identidad_usuarios",
+      "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /usuarios": {
+      "operationId": "identidad_alta",
+      "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "PATCH /usuarios/{usuarioId}": {
+      "operationId": "identidad_editar",
+      "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /catalogos/estados": {
+      "operationId": "catalogos_estados",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "GET /catalogos/municipios": {
+      "operationId": "catalogos_municipios",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "GET /catalogos/localidades": {
+      "operationId": "catalogos_localidades",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "GET /catalogos/{catalogo}": {
+      "operationId": "catalogos_tipos",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "POST /catalogos/{catalogo}": {
+      "operationId": "catalogos_alta",
+      "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "PATCH /catalogos/{catalogo}/{itemId}": {
+      "operationId": "catalogos_editar",
+      "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /iglesias": {
+      "operationId": "iglesias_buscar",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "POST /iglesias": {
+      "operationId": "iglesias_alta",
+      "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /iglesias/{iglesiaId}": {
+      "operationId": "iglesias_ficha",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "PATCH /iglesias/{iglesiaId}": {
+      "operationId": "iglesias_editar",
+      "roles": ["COORDINACION", "ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /iglesias/{iglesiaId}/cerrar": {
+      "operationId": "iglesias_cerrar",
+      "roles": ["COORDINACION", "ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /iglesias/{iglesiaId}/reabrir": {
+      "operationId": "iglesias_reabrir",
+      "roles": ["COORDINACION", "ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /ranking-patrimonial": {
+      "operationId": "patrimonio_ranking",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "GET /iglesias/por-patrimonio": {
+      "operationId": "patrimonio_buscar",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "GET /iglesias/{iglesiaId}/objetos": {
+      "operationId": "patrimonio_objetos",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "POST /iglesias/{iglesiaId}/objetos": {
+      "operationId": "patrimonio_altaObjeto",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "PATCH /iglesias/{iglesiaId}/objetos/{objetoId}": {
+      "operationId": "patrimonio_editarObjeto",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "PUT /iglesias/{iglesiaId}/objetos/{objetoId}/condicion": {
+      "operationId": "patrimonio_condicion",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /criterios-patrimoniales": {
+      "operationId": "patrimonio_criterios",
+      "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /criterios-patrimoniales": {
+      "operationId": "patrimonio_crearCriterio",
+      "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "PUT /criterios-patrimoniales/{criterioId}": {
+      "operationId": "patrimonio_editarCriterio",
+      "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /criterios-patrimoniales/{criterioId}/activar": {
+      "operationId": "patrimonio_activar",
+      "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /iglesias/{iglesiaId}/servicios": {
+      "operationId": "servicios_servicios",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "POST /iglesias/{iglesiaId}/servicios": {
+      "operationId": "servicios_altaServicio",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "PATCH /iglesias/{iglesiaId}/servicios/{recursoId}": {
+      "operationId": "servicios_editarServicio",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /iglesias/{iglesiaId}/platicas": {
+      "operationId": "servicios_platicas",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "POST /iglesias/{iglesiaId}/platicas": {
+      "operationId": "servicios_altaPlatica",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "PATCH /iglesias/{iglesiaId}/platicas/{recursoId}": {
+      "operationId": "servicios_editarPlatica",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /iglesias/{iglesiaId}/sacerdotes": {
+      "operationId": "agenda_sacerdotes",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /iglesias/{iglesiaId}/sacerdotes": {
+      "operationId": "agenda_asignar",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "PATCH /iglesias/{iglesiaId}/sacerdotes/{sacerdoteId}": {
+      "operationId": "agenda_editarSacerdote",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /sacerdotes/{sacerdoteId}/agenda": {
+      "operationId": "agenda_semanal",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /iglesias/{iglesiaId}/horarios-misa": {
+      "operationId": "agenda_horarios",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "POST /iglesias/{iglesiaId}/horarios-misa": {
+      "operationId": "agenda_crearHorario",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "PATCH /iglesias/{iglesiaId}/horarios-misa/{horarioId}": {
+      "operationId": "agenda_editarHorario",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /iglesias/{iglesiaId}/celebraciones": {
+      "operationId": "agenda_celebraciones",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /iglesias/{iglesiaId}/celebraciones": {
+      "operationId": "agenda_registrarHecho",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "PATCH /iglesias/{iglesiaId}/celebraciones/{celebracionId}": {
+      "operationId": "agenda_corregirHecho",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /iglesias/{iglesiaId}/celebraciones/{celebracionId}/sustituciones": {
+      "operationId": "agenda_sustituir",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /iglesias/{iglesiaId}/celebraciones/{celebracionId}/sustituciones": {
+      "operationId": "agenda_historial",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /iglesias/{iglesiaId}/celebraciones/{celebracionId}/diezmo": {
+      "operationId": "diezmos_registrar",
+      "roles": ["TESORERO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /iglesias/{iglesiaId}/celebraciones/{celebracionId}/diezmo": {
+      "operationId": "diezmos_consultar",
+      "roles": ["TESORERO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "PUT /iglesias/{iglesiaId}/celebraciones/{celebracionId}/diezmo": {
+      "operationId": "diezmos_corregir",
+      "roles": ["TESORERO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /iglesias/{iglesiaId}/celebraciones/{celebracionId}/diezmo/correcciones": {
+      "operationId": "diezmos_historial",
+      "roles": ["TESORERO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /iglesias/{iglesiaId}/reportes/diezmos": {
+      "operationId": "diezmos_reporte",
+      "roles": ["ADMIN_IGLESIA", "TESORERO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /iglesias/{iglesiaId}/ofertas-espacio": {
+      "operationId": "solicitudes_ofertas",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "POST /iglesias/{iglesiaId}/ofertas-espacio": {
+      "operationId": "solicitudes_altaOferta",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "PATCH /iglesias/{iglesiaId}/ofertas-espacio/{ofertaId}": {
+      "operationId": "solicitudes_editarOferta",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /iglesias/{iglesiaId}/solicitudes": {
+      "operationId": "solicitudes_alta",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "GET /iglesias/{iglesiaId}/solicitudes": {
+      "operationId": "solicitudes_listarPrivado",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /solicitudes/{folio}": {
+      "operationId": "solicitudes_seguimiento",
+      "roles": ["SOLICITANTE"],
+      "security": [
+        {
+          "SolicitudClave": []
+        }
+      ]
+    },
+    "GET /iglesias/{iglesiaId}/solicitudes/{solicitudId}": {
+      "operationId": "solicitudes_detallePrivado",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /iglesias/{iglesiaId}/solicitudes/{solicitudId}/cotizaciones": {
+      "operationId": "solicitudes_cotizar",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /iglesias/{iglesiaId}/solicitudes/{solicitudId}/sin-lugar": {
+      "operationId": "solicitudes_sinLugar",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /solicitudes/{folio}/aceptar": {
+      "operationId": "solicitudes_aceptar",
+      "roles": ["SOLICITANTE"],
+      "security": [
+        {
+          "SolicitudClave": []
+        }
+      ]
+    },
+    "POST /solicitudes/{folio}/rechazar": {
+      "operationId": "solicitudes_rechazar",
+      "roles": ["SOLICITANTE"],
+      "security": [
+        {
+          "SolicitudClave": []
+        }
+      ]
+    },
+    "POST /solicitudes/{folio}/cancelar": {
+      "operationId": "solicitudes_cancelar",
+      "roles": ["SOLICITANTE"],
+      "security": [
+        {
+          "SolicitudClave": []
+        }
+      ]
+    },
+    "GET /iglesias/{iglesiaId}/reportes/diezmos/extremos": {
+      "operationId": "diezmos_extremos",
+      "roles": ["ADMIN_IGLESIA", "TESORERO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    }
+  }
+}

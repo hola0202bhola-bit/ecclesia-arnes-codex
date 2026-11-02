@@ -1,0 +1,24 @@
+node_modules/
+coverage/
+*.log
+.env
+
+# Archivos locales y credenciales: publicación pública
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.dump
+*.bak
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+dist/
+evidence/

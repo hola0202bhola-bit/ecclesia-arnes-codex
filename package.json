@@ -1,0 +1,26 @@
+{
+  "name": "arnes-codex",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@apidevtools/swagger-parser": "13.1.0",
+    "ajv": "8.20.0",
+    "dependency-cruiser": "18.7.0",
+    "eslint": "10.14.0",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3"
+  },
+  "version": "0.3.0",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "lint": "eslint scripts tests stacks/express/*.cjs eslint.config.mjs",
+    "format:check": "prettier --check scripts tests core stacks plantilla-proyecto README.md CHANGELOG.md package.json eslint.config.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "contract": "node scripts/validate-contract.mjs",
+    "check": "node scripts/check.mjs",
+    "architecture": "node scripts/check-architecture.mjs",
+    "check:index": "node scripts/check-index.mjs"
+  }
+}
