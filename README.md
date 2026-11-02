@@ -1,3 +1,35 @@
+# Arnés Codex — estado vigente tras R1/R2/R3
+
+1 de noviembre de 2026, America/Mexico_City. Publicación real: [ecclesia-arnes-codex](https://github.com/hola0202bhola-bit/ecclesia-arnes-codex), base `3d107dab51140b23c594d7da73e5ba9ca82bef7f`; producto [ecclesia-sistema](https://github.com/hola0202bhola-bit/ecclesia-sistema), base `fb3ffc78affdad76ae61b1d5eda7a6694dc5d0b3`. Ambos SHA se comprobaron al clonar de GitHub. Los SHA son bases publicadas, no afirmaciones sobre la subida de este incremento.
+
+Pipeline vigente: lint/formato, 75 pruebas de herramientas, contratos, inventario/arquitectura y producto real con PostgreSQL, migración, doble seed, cobertura y servidor compilado. R1 añade regresiones de consulta literal en el producto; el test del índice del arnés exige 70 pruebas de producto, conservando el rechazo de errores de tipos, suite eliminada, migración rota y test fallido aunque package test salga cero.
+
+Clonar los repositorios en carpetas hermanas con nombres locales `proyecto-ecclesia` y `arnes-codex`:
+
+```powershell
+git -c core.autocrlf=true clone https://github.com/hola0202bhola-bit/ecclesia-sistema.git proyecto-ecclesia
+git -c core.autocrlf=true clone https://github.com/hola0202bhola-bit/ecclesia-arnes-codex.git arnes-codex
+cd proyecto-ecclesia
+npm ci
+npm run generate
+cd ../arnes-codex
+npm ci
+npm run check -- ../proyecto-ecclesia
+node scripts/install-hook.mjs ../proyecto-ecclesia
+cd ../proyecto-ecclesia
+git hook run pre-commit
+```
+
+Node 24 y locks exactos. `.gitattributes` conserva texto LF con `core.autocrlf=true`, y binarios sin conversión. Para un clon viejo con trabajo propio, guardar y revisar cambios antes de actualizar; preferir un clon nuevo. No restaurar archivos ni normalizar en masa sobre cambios pendientes. El hook se instala localmente; no viaja con Git. Tras revisar un cambio legítimo del arnés y ejecutar el gate, refrescarlo explícitamente con `--refresh`; no sobrescribir un hook ajeno.
+
+[Evidencias y trazabilidad vigentes](docs/estado-r1-r3.md). Las rutas antiguas `evidencias-revision02/03` son referencias al paquete externo de entrega, ausente en estos repositorios; no son enlaces utilizables ni dependencias del gate. Los registros siguientes se conservan por historia, con sus límites y resultados propios.
+
+H01 sigue abierto por falta de respuestas/validación del cliente. H02 tiene núcleo técnico demostrado, con aceptación humana/académica y PC02/04/19 pendientes. H08 parcial: validación real solo del incremento, políticas y otros dominios pendientes. H09 publicación cerrada para ambos SHA base; historial desde semana 1 residual sin dispensa. No se declara Fase 0 aprobada ni se inicia Fase 1. R4/dependencias se difiere a un incremento separado.
+
+## Documentación histórica íntegra — revisiones 01/02/03
+
+El estado vigente anterior reemplaza las descripciones antiguas de ausencia total de producto o repositorios. Su texto se conserva a continuación tal como fue registrado.
+
 # Revisión 03 — arnés 0.3.0
 
 1 de noviembre de 2026, America/Mexico_City. Integra módulo Iglesias real: Prisma/generación, compilación estricta, lint/formato, arquitectura de todas las fuentes y PostgreSQL aislado con Vitest/Supertest/cobertura. Mantiene verificaciones de contrato y regresiones históricas. El gate de producto no depende de scripts package.json y verifica cobertura por archivo. Hook materializa índice y prepara lock propio offline sin scripts; no usa node_modules de working tree. Requiere tener caché preparada con npm ci; fallo de instalación es bloqueo, no omisión de producto. No prueba validación docente ni portabilidad a otro dominio.

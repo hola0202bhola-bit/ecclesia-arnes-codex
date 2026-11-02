@@ -1,3 +1,13 @@
+# Incremento R1/R2/R3 — 1 de noviembre de 2026
+
+- R1: la regresión del índice exige 70 pruebas PostgreSQL de producto, incluidas 13 de búsqueda literal; conserva el control del índice y los cuatro rechazos reales.
+- R2: atributos LF para texto y conservación binaria, sin normalización masiva.
+- R3: README/AGENTS y registro de estado con URLs/SHA base publicados, evidencias identificadas y límites H01/H02/H08/H09. Autorización para commits/publicación no se registra como aprobación docente.
+
+Resultados ejecutados en [estado y evidencia](docs/estado-r1-r3.md). Versiones y locks no cambian; avisos de herramientas R4 fuera de este incremento.
+
+## Historial conservado
+
 # Revisión 03 — arnés 0.3.0
 
 1 de noviembre de 2026, America/Mexico_City. Integra módulo Iglesias real: Prisma/generación, compilación estricta, lint/formato, arquitectura de todas las fuentes y PostgreSQL aislado con Vitest/Supertest/cobertura. Mantiene verificaciones de contrato y regresiones históricas. El gate de producto no depende de scripts package.json y verifica cobertura por archivo. Hook materializa índice y prepara lock propio offline sin scripts; no usa node_modules de working tree. Requiere tener caché preparada con npm ci; fallo de instalación es bloqueo, no omisión de producto. No prueba validación docente ni portabilidad a otro dominio.
