@@ -56,6 +56,8 @@ export function checkArtifacts(project) {
     "docs/adr/003.md",
     "docs/adr/004.md",
     "docs/adr/005.md",
+    "docs/adr/006.md",
+    "docs/estado-producto.md",
     "docs/matriz-seguridad-revision02.md",
     "openapi.yaml",
   ]) {

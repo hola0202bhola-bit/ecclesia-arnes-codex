@@ -134,6 +134,11 @@ try {
     );
     assert.equal(html.status, 200);
     assert.match(await html.text(), /Ecclesia/);
+    const login = await fetch(`http://127.0.0.1:${httpPort}/personal/login`);
+    assert.equal(login.status, 200);
+    assert.match(await login.text(), /Acceso del personal/);
+    const privado = await fetch(`http://127.0.0.1:${httpPort}/api/v1/usuarios`);
+    assert.equal(privado.status, 401);
     const denied = await fetch(`http://127.0.0.1:${httpPort}/api/v1/iglesias`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -141,7 +146,7 @@ try {
     });
     assert.equal(denied.status, 401);
     console.log(
-      "Smoke HTTP del servidor compilado: API 200, EJS 200, alta anónima 401.",
+      "Smoke HTTP del servidor compilado: API 200, EJS 200, login 200, usuarios y alta anónima 401.",
     );
   } finally {
     if (web.exitCode === null) {
@@ -164,6 +169,8 @@ try {
           api: 200,
           ejs: 200,
           anonymousWrite: 401,
+          loginPage: 200,
+          anonymousUsers: 401,
           browserOrMobileTest: false,
         },
       },

@@ -18,7 +18,7 @@ const original = JSON.parse(
   readFileSync(join(project, "openapi.yaml"), "utf8"),
 );
 test("H11 acepta inventario completo y política original sin ampliar permisos", () =>
-  assert.equal(checkArtifacts(project).operaciones, 62));
+  assert.equal(checkArtifacts(project).operaciones, 64));
 for (const file of [
   "docs/bitacora-ia.md",
   ...["001", "002", "003", "004", "005"].map((n) => "docs/adr/" + n + ".md"),

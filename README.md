@@ -1,4 +1,12 @@
-# Arnés Codex — estado vigente tras R1/R2/R3
+# Arnés Codex de Ecclesia
+
+Continuación vigente: [incremento de identidad](docs/incremento-identidad.md). Dos entregas prioritarias: aplicación y arnés; no se exige cierre formal de Fase 0. Se conserva la verificación de arquitectura/contratos/índice y se incorporan cuentas/sesiones reales y sus regresiones. Estado funcional y evidencia: `../proyecto-ecclesia/docs/estado-producto.md` y `docs/evidencia-identidad.md` en producto.
+
+Clonar como hermanos `proyecto-ecclesia` y `arnes-codex`; Node 24, `npm ci` en ambos, `npm run generate` en producto. Desde este arnés ejecutar `npm run check -- ../proyecto-ecclesia`. No necesita base de datos externa ni cuentas del alumno: PostgreSQL aislado y datos ficticios. Tras gate/revisión, `node scripts/install-hook.mjs ../proyecto-ecclesia` instala hook local sin sobrescribir ajenos; --refresh solo tras revisar cambios legítimos del arnés. Commits nuevos y publicación sin force push autorizados; comprobar SHA remoto.
+
+## Antecedente conservado: R1/R2/R3
+
+# Arnés Codex — estado tras R1/R2/R3
 
 1 de noviembre de 2026, America/Mexico_City. Publicación real: [ecclesia-arnes-codex](https://github.com/hola0202bhola-bit/ecclesia-arnes-codex), base `3d107dab51140b23c594d7da73e5ba9ca82bef7f`; producto [ecclesia-sistema](https://github.com/hola0202bhola-bit/ecclesia-sistema), base `fb3ffc78affdad76ae61b1d5eda7a6694dc5d0b3`. Ambos SHA se comprobaron al clonar de GitHub. Los SHA son bases publicadas, no afirmaciones sobre la subida de este incremento.
 

@@ -83,7 +83,7 @@ function fixture(action) {
       if (r.status === 0)
         assert.match(
           r.stdout + r.stderr,
-          /tests 62/,
+          /tests (?:6[4-9]|[7-9]\d|\d{3,})/,
           "El hook positivo debe ejecutar todas sus pruebas no recursivas",
         );
       assert.equal(

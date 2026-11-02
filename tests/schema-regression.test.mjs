@@ -23,6 +23,48 @@ ajv.addSchema({ $id: "ecclesia", components: { schemas } });
 const validate = (name, data) =>
   ajv.validate({ $ref: `ecclesia#/components/schemas/${name}` }, data);
 const id = "00000000-0000-4000-8000-000000000001";
+test("RF06: perfil implementado exige rol y ámbito, sin relajar la propuesta histórica de edición", () => {
+  const datos = {
+    identificador: "ficticio",
+    password: "Contraseña ficticia larga",
+    rol: "COORDINACION",
+  };
+  assert.equal(validate("AltaPersonal", datos), true);
+  assert.equal(validate("AltaPersonal", { ...datos, iglesiaId: id }), false);
+  assert.equal(validate("AltaPersonal", { ...datos, rol: "TESORERO" }), false);
+  assert.equal(
+    validate("AltaPersonal", { ...datos, rol: "TESORERO", iglesiaId: id }),
+    true,
+  );
+  assert.equal(
+    validate("AltaPersonal", { ...datos, password: "corta" }),
+    false,
+  );
+  assert.equal(
+    validate("AltaPersonal", { ...datos, roles: ["COORDINACION"] }),
+    false,
+  );
+});
+test("RF06: lecturas reales no publican hash y logout exige personal", () => {
+  const cuenta = {
+    id,
+    identificador: "ficticio",
+    rol: "COORDINACION",
+    activo: true,
+  };
+  assert.equal(validate("CuentaPersonal", cuenta), true);
+  assert.equal(
+    validate("CuentaPersonal", { ...cuenta, passwordHash: "no-publicar" }),
+    false,
+  );
+  assert.deepEqual(api.paths["/auth/logout"].post.security, [
+    { PersonalJWT: [] },
+  ]);
+  assert.equal(
+    api.paths["/auth/login"].post["x-implementation"],
+    "IMPLEMENTADO_IDENTIDAD_MINIMA",
+  );
+});
 const creates = {
   Usuario: { identificador: "usuario-ficticio" },
   Iglesia: { nombre: "Iglesia ficticia" },

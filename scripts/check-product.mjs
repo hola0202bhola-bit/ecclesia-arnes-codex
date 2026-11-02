@@ -14,6 +14,11 @@ export function checkProduct(project) {
     "prisma/seed.ts",
     "prisma/fuentes/inegi-localidad.json",
     "tests/iglesias.test.ts",
+    "tests/identidad.test.ts",
+    "prisma/migrations/202611010002_identidad/migration.sql",
+    "views/login.ejs",
+    "views/personal.ejs",
+    "views/usuarios.ejs",
     "views/iglesias.ejs",
     "views/ficha.ejs",
     "docs/api-referencia-revision03.json",
@@ -53,6 +58,7 @@ export function checkProduct(project) {
     "NodeNext",
     ...files,
     "tests/iglesias.test.ts",
+    "tests/identidad.test.ts",
     "prisma/seed.ts",
   ]);
   run(["node_modules/eslint/bin/eslint.js", "src", "tests", "prisma/seed.ts"]);
@@ -99,6 +105,20 @@ export function checkProduct(project) {
     report.numPendingTests
   )
     throw new Error("Reporte de pruebas de producto inválido/vacío/omitido");
+  for (const [suite, minimum] of [
+    ["iglesias.test.ts", 70],
+    ["identidad.test.ts", 30],
+  ]) {
+    const result = report.testResults?.find((r) =>
+      r.name.replaceAll("\\", "/").endsWith("/tests/" + suite),
+    );
+    if (
+      !result ||
+      result.assertionResults.filter((r) => r.status === "passed").length <
+        minimum
+    )
+      throw new Error("Suite obligatoria incompleta: " + suite);
+  }
   const coverage = JSON.parse(
     readFileSync(join(project, "coverage/coverage-summary.json"), "utf8"),
   );

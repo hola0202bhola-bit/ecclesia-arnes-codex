@@ -70,4 +70,6 @@ else
   console.log(
     "Sin código de producto: solo se acreditan herramientas y contrato.",
   );
-console.log("Fase 0 abierta; revisión humana y validación docente pendientes.");
+console.log(
+  "Gate técnico completado. El alcance funcional consta en docs/estado-producto.md; las pruebas no acreditan aceptación docente.",
+);

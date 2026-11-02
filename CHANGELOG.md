@@ -1,3 +1,12 @@
+# Incremento Identidad — 1 de noviembre de 2026
+
+- Pipeline obligatorio de Identidad: suite, migración, vistas, tipos, ejecución PostgreSQL y mínimos por suite sin omisiones. Smoke amplía entrada y rechazo anónimo de usuarios.
+- Política OpenAPI para perfil y logout; regresiones de contrato de cuentas y permisos, sin ampliar accesos a otros dominios.
+- Hook conserva regresiones previas y rechaza suite de Identidad eliminada del índice; total histórico se reemplaza por mínimos y presencia de ambas suites.
+- Contexto vigente permite desarrollo autorizado sin ceremonial de Fase 0. Dependencias y lock del arnés se conservan.
+
+Ver [alcance y evidencia](docs/incremento-identidad.md).
+
 # Incremento R1/R2/R3 — 1 de noviembre de 2026
 
 - R1: la regresión del índice exige 70 pruebas PostgreSQL de producto, incluidas 13 de búsqueda literal; conserva el control del índice y los cuatro rechazos reales.

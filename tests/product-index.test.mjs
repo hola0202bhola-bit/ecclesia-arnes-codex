@@ -59,9 +59,10 @@ test(
       assert.match(output, pattern);
       assert.doesNotMatch(output, /recursively.*skipping/);
       if (expected) {
-        assert.match(output, /tests 62/);
-        // 57 originales y 13 regresiones de búsqueda literal de R1.
-        assert.match(output, /Tests\s+70 passed/);
+        assert.ok(Number(output.match(/\btests (\d+)/)?.[1]) >= 64);
+        // Conserva Iglesias y exige también identidad, sin fijar un total histórico.
+        assert.ok(Number(output.match(/Tests\s+(\d+) passed/)?.[1]) >= 100);
+        assert.match(output, /identidad\.test\.ts/);
         assert.match(output, /PostgreSQL real aislado/);
       }
     }
@@ -111,6 +112,14 @@ test(
         /Pipeline de producto incompleto: falta tests/,
       );
       ok(exec(["add", testPath]));
+      const identidadPath = "tests/identidad.test.ts";
+      ok(exec(["rm", "--cached", "-f", identidadPath]));
+      hook(
+        "identidad eliminada del índice pero presente en disco",
+        false,
+        /Pipeline de producto incompleto: falta tests\/identidad/,
+      );
+      ok(exec(["add", identidadPath]));
       const sqlPath =
         "prisma/migrations/202611010001_referencia_iglesias/migration.sql";
       const sql = readFileSync(join(repo, sqlPath), "utf8");

@@ -512,6 +512,24 @@
           "PersonalJWT": []
         }
       ]
+    },
+    "GET /auth/me": {
+      "operationId": "identidad_perfil",
+      "roles": ["COORDINACION", "ADMIN_IGLESIA", "TESORERO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /auth/logout": {
+      "operationId": "identidad_logout",
+      "roles": ["COORDINACION", "ADMIN_IGLESIA", "TESORERO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     }
   }
 }
