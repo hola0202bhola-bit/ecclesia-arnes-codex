@@ -60,7 +60,8 @@ test(
       assert.doesNotMatch(output, /recursively.*skipping/);
       if (expected) {
         assert.match(output, /tests 62/);
-        assert.match(output, /Tests\s+57 passed/);
+        // 57 originales y 13 regresiones de búsqueda literal de R1.
+        assert.match(output, /Tests\s+70 passed/);
         assert.match(output, /PostgreSQL real aislado/);
       }
     }
