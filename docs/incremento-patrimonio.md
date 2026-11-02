@@ -11,3 +11,7 @@ Contratos: DTO ejecutable de patrimonio en ambas especificaciones; matriz de per
 Índice Git: exige también suite/migración/formulario preparados y rechaza una alteración de la bonificación INAH en el blob aunque working tree conserve la fórmula correcta. El rechazo proviene de ejecutar las pruebas reales, no de buscar texto de la fórmula. Se mantiene materialización exacta y preservación del índice/working tree. No se desactiva gate ni se rebaja cobertura.
 
 Smoke del servidor compilado: añade ranking API/EJS, consulta de objetos y rechazo anónimo de gestión patrimonial. PostgreSQL aislado, cuatro migraciones y doble seed; no usa bases del alumno. Sin descarga geográfica en pruebas. Límites funcionales y resultados en `../proyecto-ecclesia/docs/incremento-patrimonio.md` y `estado-producto.md`.
+
+Windows: el cierre forzado del paquete embebido dejó un `io_worker` con tuberías heredadas después de completar las 234 pruebas y el smoke. El servidor temporal usa `io_method=sync` en Windows; la configuración de la aplicación permanece intacta. El reporte registra el método real. No se omiten pruebas de transacciones/concurrencia ni se simula PostgreSQL. Fuente primaria del parámetro: [PostgreSQL 18, E/S](https://www.postgresql.org/docs/18/runtime-config-resource.html#GUC-IO-METHOD).
+
+Resultado ejecutado del gate íntegro: 81/81 del arnés y 234/234 del producto, sin omitidas. Cobertura de líneas 98.75%. PostgreSQL temporal cerrado; escenarios positivos/negativos de índice conservan índice y working tree. Métricas del producto y límites en estado-producto.md.

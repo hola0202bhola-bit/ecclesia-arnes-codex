@@ -30,7 +30,14 @@ const cluster = new EmbeddedPostgres({
   persistent: true,
   authMethod: "scram-sha-256",
   initdbFlags: ["--encoding=UTF8", "--locale=C"],
-  postgresFlags: ["-h", "127.0.0.1"],
+  // PostgreSQL 18 usa trabajadores de E/S por defecto. En Windows, el cierre
+  // forzado del paquete embebido puede dejar uno con las tuberías heredadas.
+  // E/S síncrona solo en este servidor temporal; no cambia la BD del producto.
+  postgresFlags: [
+    "-h",
+    "127.0.0.1",
+    ...(process.platform === "win32" ? ["-c", "io_method=sync"] : []),
+  ],
   onLog: () => {},
   onError: () => {},
   autoRehydrateSymlinks: true,
@@ -65,7 +72,9 @@ try {
   await cluster.createDatabase("ecclesia_test");
   const client = new pg.Client({ connectionString: env.DATABASE_URL });
   await client.connect();
-  const { rows } = await client.query("SELECT version() AS version");
+  const { rows } = await client.query(
+    "SELECT version() AS version, current_setting('io_method') AS io_method",
+  );
   await client.end();
   console.log("PostgreSQL real aislado:", rows[0].version);
   await run(["node_modules/prisma/build/index.js", "migrate", "deploy"]);
@@ -199,6 +208,7 @@ try {
       {
         date: new Date().toISOString(),
         database: rows[0].version,
+        ioMethod: rows[0].io_method,
         migrations: "prisma migrate deploy",
         seedRuns: 2,
         isolated: true,
@@ -230,4 +240,5 @@ try {
   if (started) await cluster.stop();
   // Ruta generada por mkdtemp, nunca un destino proporcionado por el usuario.
   rmSync(temp, { recursive: true, force: true });
+  console.log("PostgreSQL temporal detenido y archivos de la base eliminados.");
 }
