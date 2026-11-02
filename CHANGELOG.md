@@ -1,3 +1,10 @@
+# Incremento Iglesias web/catálogos — 1 de noviembre de 2026
+
+- Gate exige suite de gestión EJS/catálogos, migración aditiva, fuentes oficiales con manifest y vistas nuevas. Conserva las regresiones de Iglesias e Identidad.
+- Hook rechaza suite, manifest o formulario eliminados solo del índice; positivo exige las tres suites PostgreSQL.
+- Contrato de consulta pública exige fuente/versión/alcance y evita simular versiones mutables de registros oficiales; política de permisos intacta. Smoke del servidor añade catálogos y gestión anónima rechazada.
+- Motivo: impedir que pase un índice incompleto del incremento autorizado. Dependencias y lock no cambian; resultados en ../proyecto-ecclesia/docs/estado-producto.md.
+
 # Incremento Identidad — 1 de noviembre de 2026
 
 - Pipeline obligatorio de Identidad: suite, migración, vistas, tipos, ejecución PostgreSQL y mínimos por suite sin omisiones. Smoke amplía entrada y rechazo anónimo de usuarios.

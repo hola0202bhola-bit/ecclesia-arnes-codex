@@ -15,6 +15,18 @@ export function checkProduct(project) {
     "prisma/fuentes/inegi-localidad.json",
     "tests/iglesias.test.ts",
     "tests/identidad.test.ts",
+    "tests/gestion-iglesias.test.ts",
+    "prisma/fuentes/manifest.json",
+    "prisma/fuentes/inegi-estados.json",
+    ...Array.from(
+      { length: 32 },
+      (_, i) =>
+        `prisma/fuentes/inegi-municipios-${String(i + 1).padStart(2, "0")}.json`,
+    ),
+    "prisma/migrations/202611010003_catalogos/migration.sql",
+    "views/gestion-iglesias.ejs",
+    "views/iglesia-formulario.ejs",
+    "views/error.ejs",
     "prisma/migrations/202611010002_identidad/migration.sql",
     "views/login.ejs",
     "views/personal.ejs",
@@ -59,6 +71,7 @@ export function checkProduct(project) {
     ...files,
     "tests/iglesias.test.ts",
     "tests/identidad.test.ts",
+    "tests/gestion-iglesias.test.ts",
     "prisma/seed.ts",
   ]);
   run(["node_modules/eslint/bin/eslint.js", "src", "tests", "prisma/seed.ts"]);
@@ -108,6 +121,7 @@ export function checkProduct(project) {
   for (const [suite, minimum] of [
     ["iglesias.test.ts", 70],
     ["identidad.test.ts", 30],
+    ["gestion-iglesias.test.ts", 49],
   ]) {
     const result = report.testResults?.find((r) =>
       r.name.replaceAll("\\", "/").endsWith("/tests/" + suite),

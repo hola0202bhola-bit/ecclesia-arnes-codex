@@ -17,7 +17,7 @@ const source =
   process.env.ECCLESIA_PROJECT ??
   fileURLToPath(new URL("../../proyecto-ecclesia", import.meta.url));
 test(
-  "H02/H03 índice de producto: positivo y cuatro fallos preparados sin usar working tree",
+  "H02/H03 índice de producto: positivo y rechazos preparados sin usar working tree",
   { timeout: 600000 },
   () => {
     const root = mkdtempSync(join(tmpdir(), "ecclesia-product-index-"));
@@ -63,6 +63,7 @@ test(
         // Conserva Iglesias y exige también identidad, sin fijar un total histórico.
         assert.ok(Number(output.match(/Tests\s+(\d+) passed/)?.[1]) >= 100);
         assert.match(output, /identidad\.test\.ts/);
+        assert.match(output, /gestion-iglesias\.test\.ts/);
         assert.match(output, /PostgreSQL real aislado/);
       }
     }
@@ -120,6 +121,19 @@ test(
         /Pipeline de producto incompleto: falta tests\/identidad/,
       );
       ok(exec(["add", identidadPath]));
+      for (const path of [
+        "tests/gestion-iglesias.test.ts",
+        "prisma/fuentes/manifest.json",
+        "views/iglesia-formulario.ejs",
+      ]) {
+        ok(exec(["rm", "--cached", "-f", path]));
+        hook(
+          "archivo obligatorio eliminado solo del índice: " + path,
+          false,
+          /Pipeline de producto incompleto: falta/,
+        );
+        ok(exec(["add", path]));
+      }
       const sqlPath =
         "prisma/migrations/202611010001_referencia_iglesias/migration.sql";
       const sql = readFileSync(join(repo, sqlPath), "utf8");

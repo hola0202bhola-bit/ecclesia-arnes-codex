@@ -1,6 +1,6 @@
 # Arnés Codex de Ecclesia
 
-Continuación vigente: [incremento de identidad](docs/incremento-identidad.md). Dos entregas prioritarias: aplicación y arnés; no se exige cierre formal de Fase 0. Se conserva la verificación de arquitectura/contratos/índice y se incorporan cuentas/sesiones reales y sus regresiones. Estado funcional y evidencia: `../proyecto-ecclesia/docs/estado-producto.md` y `docs/evidencia-identidad.md` en producto.
+Continuación vigente: [Iglesias web/catálogos e identidad](docs/incremento-identidad.md). Gate con tres suites de producto, fuentes oficiales, migración aditiva y vistas; se conservan permisos y bloqueos. Dos entregas prioritarias: aplicación y arnés; no se exige cierre formal de Fase 0. Se conserva la verificación de arquitectura/contratos/índice y se incorporan cuentas/sesiones reales y sus regresiones. Estado funcional y evidencia: `../proyecto-ecclesia/docs/estado-producto.md` y `docs/evidencia-identidad.md` en producto.
 
 Clonar como hermanos `proyecto-ecclesia` y `arnes-codex`; Node 24, `npm ci` en ambos, `npm run generate` en producto. Desde este arnés ejecutar `npm run check -- ../proyecto-ecclesia`. No necesita base de datos externa ni cuentas del alumno: PostgreSQL aislado y datos ficticios. Tras gate/revisión, `node scripts/install-hook.mjs ../proyecto-ecclesia` instala hook local sin sobrescribir ajenos; --refresh solo tras revisar cambios legítimos del arnés. Commits nuevos y publicación sin force push autorizados; comprobar SHA remoto.
 

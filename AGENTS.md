@@ -1,5 +1,7 @@
 # Instrucciones vigentes del arnés Ecclesia
 
+Iglesias web/catálogos: exigir tests/gestion-iglesias.test.ts, vistas, migración y fuentes/manifest del incremento; mantener las suites anteriores. Respuestas INEGI originales conservan bytes para hashes. La consulta de snapshot no implica edición libre ni catálogo nacional de localidades completo.
+
 Continuación autorizada: aplicación y arnés son las dos entregas prioritarias. Leer `docs/incremento-identidad.md` y `../proyecto-ecclesia/docs/estado-producto.md`. Las prohibiciones históricas de iniciar Fase 1 que siguen describen R1/R2/R3; no bloquean los incrementos autorizados por el alumno. No exigir cierre ceremonial ni aprobación docente sin evidencia. Mantener reglas de capas, seguridad, pruebas PostgreSQL, snapshot de índice, trazabilidad y commits reales. Identidad se añade al pipeline obligatorio, con suites de ambos módulos y contratos explícitos.
 
 ## Antecedente conservado: R1/R2/R3

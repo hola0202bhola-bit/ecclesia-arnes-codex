@@ -139,6 +139,21 @@ try {
     assert.match(await login.text(), /Acceso del personal/);
     const privado = await fetch(`http://127.0.0.1:${httpPort}/api/v1/usuarios`);
     assert.equal(privado.status, 401);
+    const estados = await fetch(
+      `http://127.0.0.1:${httpPort}/api/v1/catalogos/estados?pageSize=100`,
+    );
+    assert.equal(estados.status, 200);
+    assert.equal((await estados.json()).meta.total, 32);
+    const municipios = await fetch(
+      `http://127.0.0.1:${httpPort}/api/v1/catalogos/municipios?estadoClave=21`,
+    );
+    assert.equal(municipios.status, 200);
+    assert.equal((await municipios.json()).meta.total, 217);
+    const gestion = await fetch(
+      `http://127.0.0.1:${httpPort}/personal/iglesias`,
+    );
+    assert.equal(gestion.status, 401);
+    assert.match(await gestion.text(), /Iniciar sesión/);
     const denied = await fetch(`http://127.0.0.1:${httpPort}/api/v1/iglesias`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -146,7 +161,7 @@ try {
     });
     assert.equal(denied.status, 401);
     console.log(
-      "Smoke HTTP del servidor compilado: API 200, EJS 200, login 200, usuarios y alta anónima 401.",
+      "Smoke HTTP del servidor compilado: API/EJS/login/catálogos 200; usuarios, gestión web y alta anónima 401.",
     );
   } finally {
     if (web.exitCode === null) {
@@ -171,6 +186,9 @@ try {
           anonymousWrite: 401,
           loginPage: 200,
           anonymousUsers: 401,
+          anonymousChurchManagement: 401,
+          states: 32,
+          pueblaMunicipalities: 217,
           browserOrMobileTest: false,
         },
       },

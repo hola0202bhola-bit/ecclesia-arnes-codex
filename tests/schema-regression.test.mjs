@@ -23,6 +23,56 @@ ajv.addSchema({ $id: "ecclesia", components: { schemas } });
 const validate = (name, data) =>
   ajv.validate({ $ref: `ecclesia#/components/schemas/${name}` }, data);
 const id = "00000000-0000-4000-8000-000000000001";
+
+test("RF05: lectura de catálogos exige procedencia y no simula versión mutable por registro", () => {
+  const page = {
+    data: [{ id: "21", nombre: "Puebla" }],
+    meta: { page: 1, pageSize: 20, total: 1 },
+    fuentes: [
+      {
+        version: "inegi-consulta-2026-11-01",
+        consulta: "2026-11-01",
+        sha256: "a".repeat(64),
+      },
+    ],
+    alcance: "Localidades parciales",
+  };
+  assert.equal(validate("CatalogoPaginaLectura", page), true);
+  for (const key of ["fuentes", "alcance"]) {
+    const invalid = clone(page);
+    delete invalid[key];
+    assert.equal(validate("CatalogoPaginaLectura", invalid), false);
+  }
+  assert.equal(
+    validate("CatalogoPaginaLectura", {
+      ...page,
+      data: [{ ...page.data[0], version: 1 }],
+    }),
+    false,
+  );
+  assert.equal(
+    validate("CatalogoFuente", {
+      ...page.fuentes[0],
+      sha256: "sin-integridad",
+    }),
+    false,
+  );
+  for (const path of [
+    "/catalogos/estados",
+    "/catalogos/municipios",
+    "/catalogos/localidades",
+    "/catalogos/{catalogo}",
+  ]) {
+    const op = api.paths[path].get;
+    assert.deepEqual(op.security, []);
+    assert.deepEqual(op["x-roles"], ["PUBLICO"]);
+    assert.equal(op["x-implementation"], "IMPLEMENTADO");
+  }
+  assert.equal(
+    api.paths["/catalogos/{catalogo}"].post["x-implementation"],
+    "DISEÑO_NO_IMPLEMENTADO",
+  );
+});
 test("RF06: perfil implementado exige rol y ámbito, sin relajar la propuesta histórica de edición", () => {
   const datos = {
     identificador: "ficticio",
