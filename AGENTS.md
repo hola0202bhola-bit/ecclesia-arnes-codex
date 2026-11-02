@@ -1,3 +1,5 @@
+Servicios/pláticas RF13–15 autorizados: leer docs/incremento-servicios.md. Gate exige quinta suite PostgreSQL, migración, vistas y regresiones de modalidades, concurrencia, rollback, CSRF y actualización; preservar 35.5 y controles previos. Solo catálogos de lectura nuevos; no ampliar permisos de gestión.
+
 # Instrucciones vigentes del arnés Ecclesia
 
 Patrimonio autorizado: leer docs/incremento-patrimonio.md y la guía homónima del producto. Exigir cuarta suite, migración/vistas y regresiones semánticas (35.5, concurrencia, rollback, CSRF y filtro de misma pieza). No ampliar permisos ni declarar RF11 configuración terminado. Conservar todos los checks anteriores y la regresión de fórmula alterada solo en el índice.

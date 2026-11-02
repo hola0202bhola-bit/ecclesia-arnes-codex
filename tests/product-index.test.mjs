@@ -65,6 +65,7 @@ test(
         assert.match(output, /identidad\.test\.ts/);
         assert.match(output, /gestion-iglesias\.test\.ts/);
         assert.match(output, /patrimonio\.test\.ts/);
+        assert.match(output, /servicios\.test\.ts/);
         assert.match(output, /PostgreSQL real aislado/);
       }
     }
@@ -129,6 +130,9 @@ test(
         "tests/patrimonio.test.ts",
         "prisma/migrations/202611020001_patrimonio/migration.sql",
         "views/objeto-formulario.ejs",
+        "tests/servicios.test.ts",
+        "prisma/migrations/202611020002_servicios/migration.sql",
+        "views/oferta-formulario.ejs",
       ]) {
         ok(exec(["rm", "--cached", "-f", path]));
         hook(
@@ -158,6 +162,7 @@ test(
         indice.replace("bonoInahDecimas: 50", "bonoInahDecimas: 40"),
       );
       ok(exec(["add", indicePath]));
+      const ofertaPath = "src/modules/servicios/domain/oferta.ts";
       writeFileSync(join(repo, indicePath), indice);
       hook(
         "fórmula staged alterada con working tree correcto",
@@ -165,6 +170,23 @@ test(
         /reproduce exactamente P074/,
       );
       ok(exec(["add", indicePath]));
+      const oferta = readFileSync(join(repo, ofertaPath), "utf8");
+      assert.match(oferta, /datos.modalidad === "FIJO"/);
+      writeFileSync(
+        join(repo, ofertaPath),
+        oferta.replace(
+          'datos.modalidad === "FIJO"',
+          'datos.modalidad === "GRATUITO"',
+        ),
+      );
+      ok(exec(["add", ofertaPath]));
+      writeFileSync(join(repo, ofertaPath), oferta);
+      hook(
+        "aportación staged alterada con working tree correcto",
+        false,
+        /mismo tipo admite fijo, gratuito y donativo/,
+      );
+      ok(exec(["add", ofertaPath]));
       const pkgPath = join(repo, "package.json");
       const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
       pkg.scripts.test = 'node -e "process.exit(0)"';

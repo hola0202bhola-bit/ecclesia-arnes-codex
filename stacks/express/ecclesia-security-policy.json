@@ -530,6 +530,16 @@
           "PersonalJWT": []
         }
       ]
+    },
+    "GET /catalogos/tipos-servicio": {
+      "operationId": "servicios_tiposServicio",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "GET /catalogos/tipos-platica": {
+      "operationId": "servicios_tiposPlatica",
+      "roles": ["PUBLICO"],
+      "security": []
     }
   }
 }

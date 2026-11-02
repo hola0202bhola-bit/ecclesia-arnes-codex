@@ -1,3 +1,9 @@
+## Servicios y pláticas — 2 de noviembre de 2026
+
+- Quinta suite obligatoria con escenarios semánticos; smoke de consultas API/EJS y gestión anónima.
+- Contratos de modalidades/versión y lecturas de tipos, sin privilegios nuevos.
+- Índice: rechazo de suite/migración/formulario ausentes y modalidad alterada solo en Git. [Alcance](docs/incremento-servicios.md).
+
 # Incremento Iglesias web/catálogos — 1 de noviembre de 2026
 
 ## Patrimonio — 2 de noviembre de 2026

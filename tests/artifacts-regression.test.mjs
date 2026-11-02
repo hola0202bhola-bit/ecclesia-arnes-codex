@@ -17,8 +17,21 @@ const project =
 const original = JSON.parse(
   readFileSync(join(project, "openapi.yaml"), "utf8"),
 );
-test("H11 acepta inventario completo y política original sin ampliar permisos", () =>
-  assert.equal(checkArtifacts(project).operaciones, 64));
+test("H11 acepta inventario completo y política explícita sin ampliar permisos", () => {
+  const policy = JSON.parse(
+    readFileSync(
+      new URL(
+        "../stacks/express/ecclesia-security-policy.json",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
+  assert.equal(
+    checkArtifacts(project).operaciones,
+    Object.keys(policy.operations).length,
+  );
+});
 for (const file of [
   "docs/bitacora-ia.md",
   ...["001", "002", "003", "004", "005"].map((n) => "docs/adr/" + n + ".md"),

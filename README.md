@@ -1,3 +1,5 @@
+Continuación vigente: [Servicios y pláticas RF13–15](docs/incremento-servicios.md). Gate exige quinta suite PostgreSQL, modalidades, transacciones/seguridad, contrato y UI; conserva todas las regresiones anteriores.
+
 # Arnés Codex de Ecclesia
 
 Continuación vigente: [Patrimonio e índice](docs/incremento-patrimonio.md). Gate exige las cuatro suites, ejemplo 35.5, migración y UI, seguridad, rollback, PostgreSQL y rechazo de fórmula alterada en el índice. Las instrucciones de instalación y preservación de snapshots siguientes siguen vigentes.

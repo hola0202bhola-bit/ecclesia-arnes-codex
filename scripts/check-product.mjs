@@ -17,6 +17,10 @@ export function checkProductInputs(project) {
     "tests/identidad.test.ts",
     "tests/gestion-iglesias.test.ts",
     "tests/patrimonio.test.ts",
+    "tests/servicios.test.ts",
+    "prisma/migrations/202611020002_servicios/migration.sql",
+    "views/oferta.ejs",
+    "views/oferta-formulario.ejs",
     "prisma/migrations/202611020001_patrimonio/migration.sql",
     "views/patrimonio.ejs",
     "views/objeto-formulario.ejs",
@@ -84,6 +88,7 @@ export function checkProduct(project) {
     "tests/identidad.test.ts",
     "tests/gestion-iglesias.test.ts",
     "tests/patrimonio.test.ts",
+    "tests/servicios.test.ts",
     "prisma/seed.ts",
   ]);
   run(["node_modules/eslint/bin/eslint.js", "src", "tests", "prisma/seed.ts"]);
@@ -135,6 +140,7 @@ export function checkProduct(project) {
     ["identidad.test.ts", 30],
     ["gestion-iglesias.test.ts", 49],
     ["patrimonio.test.ts", 80],
+    ["servicios.test.ts", 1],
   ]) {
     const result = report.testResults?.find((r) =>
       r.name.replaceAll("\\", "/").endsWith("/tests/" + suite),
@@ -163,6 +169,25 @@ export function checkProduct(project) {
       )
     )
       throw new Error("Regresión patrimonial obligatoria ausente: " + regla);
+  }
+  const oferta = report.testResults.find((r) =>
+    r.name.replaceAll("\\", "/").endsWith("/tests/servicios.test.ts"),
+  );
+  for (const regla of [
+    "mismo tipo admite fijo, gratuito y donativo",
+    "servicios: dos cambios simultáneos",
+    "platicas: dos cambios simultáneos",
+    "fallo de auditoría revierte",
+    "CSRF/Origin",
+    "escape de HTML",
+    "actualiza esquema previo",
+  ]) {
+    if (
+      !oferta.assertionResults.some(
+        (r) => r.status === "passed" && r.fullName.includes(regla),
+      )
+    )
+      throw new Error("Regresión de oferta obligatoria ausente: " + regla);
   }
   const coverage = JSON.parse(
     readFileSync(join(project, "coverage/coverage-summary.json"), "utf8"),

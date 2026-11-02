@@ -192,6 +192,22 @@ try {
       `http://127.0.0.1:${httpPort}/personal/patrimonio/${iglesiaId}`,
     );
     assert.equal(patrimonioPrivado.status, 401);
+    for (const clase of ["servicios", "platicas"]) {
+      const oferta = await fetch(
+        `http://127.0.0.1:${httpPort}/api/v1/iglesias/${iglesiaId}/${clase}`,
+      );
+      assert.equal(oferta.status, 200);
+      assert.ok(Array.isArray((await oferta.json()).data));
+      const pagina = await fetch(
+        `http://127.0.0.1:${httpPort}/iglesias/${iglesiaId}/${clase}`,
+      );
+      assert.equal(pagina.status, 200);
+      assert.match(await pagina.text(), /Ecclesia/);
+      const gestionOferta = await fetch(
+        `http://127.0.0.1:${httpPort}/personal/oferta/${iglesiaId}/${clase}`,
+      );
+      assert.equal(gestionOferta.status, 401);
+    }
     console.log(
       "Smoke HTTP del servidor compilado: API/EJS/login/catálogos/patrimonio/ranking 200; usuarios, gestión web/patrimonio y alta anónima 401.",
     );
@@ -226,6 +242,9 @@ try {
           rankingWeb: 200,
           patrimonio: 200,
           anonymousHeritageManagement: 401,
+          servicios: 200,
+          platicas: 200,
+          anonymousOfferManagement: 401,
           browserOrMobileTest: false,
         },
       },
