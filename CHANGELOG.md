@@ -1,5 +1,7 @@
 ## 0.6.0 — 2026-11-03
 
+Gate integral ejecutado con salida 0: 89/89 arnés, 315/315 producto, PostgreSQL real y 27 escenarios de índice con preservación completa. Cobertura de líneas 99.28%; sin aceptación docente/humana atribuida.
+
 Controles pertinentes RF22–24: archivos/séptima suite, resultados semánticos con PostgreSQL, tres pruebas de contrato contable/roles, smoke financiero compilado y rechazo de centavos alterados solo en índice. Se conservan suites, umbral de cobertura y controles previos; sin sumar repeticiones internas como casos nuevos.
 
 Validación RF16–21 del 3 de noviembre de 2026: `npm run check -- ../proyecto-ecclesia` terminó con salida 0, **86/86 pruebas del arnés y 293/293 del producto**. PostgreSQL real, seis migraciones, smoke HTTP y 22 escenarios de índice con preservación comprobada. Se conserva el ejemplo 35.5 y las suites anteriores; PC10–12 y Teams provisional siguen sin confirmar.
