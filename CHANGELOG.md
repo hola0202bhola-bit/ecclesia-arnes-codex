@@ -1,3 +1,9 @@
+Validación RF16–21 del 3 de noviembre de 2026: `npm run check -- ../proyecto-ecclesia` terminó con salida 0, **86/86 pruebas del arnés y 293/293 del producto**. PostgreSQL real, seis migraciones, smoke HTTP y 22 escenarios de índice con preservación comprobada. Se conserva el ejemplo 35.5 y las suites anteriores; PC10–12 y Teams provisional siguen sin confirmar.
+
+## 2026-11-03 — Regresiones reales de sacerdotes y misas
+
+Sexta suite PostgreSQL obligatoria, contratos de agenda con permisos explícitos, smoke de misas y gestión anónima denegada. Regresión de índice para suite/migración/vistas ausentes y comparación de traslapes alterada solo en Git. Se conserva el gate previo sin rebajar umbrales ni omitir suites.
+
 ## Servicios y pláticas — 2 de noviembre de 2026
 
 - Quinta suite obligatoria con escenarios semánticos; smoke de consultas API/EJS y gestión anónima.

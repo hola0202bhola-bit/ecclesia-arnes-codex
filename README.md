@@ -1,3 +1,7 @@
+Validación RF16–21 del 3 de noviembre de 2026: `npm run check -- ../proyecto-ecclesia` terminó con salida 0, **86/86 pruebas del arnés y 293/293 del producto**. PostgreSQL real, seis migraciones, smoke HTTP y 22 escenarios de índice con preservación comprobada. Se conserva el ejemplo 35.5 y las suites anteriores; PC10–12 y Teams provisional siguen sin confirmar.
+
+Agenda RF16–21: el gate exige tests/agenda.test.ts, migración aditiva y vistas, contratos con permisos explícitos, PostgreSQL/zonas/DST/sustituciones y smoke HTTP compilado de misas. El índice debe rechazar desactivar traslapes aunque el archivo de trabajo esté correcto. [Subalcance del producto](../proyecto-ecclesia/docs/adr/008.md). Teams provisional sin implementar.
+
 Continuación vigente: [Servicios y pláticas RF13–15](docs/incremento-servicios.md). Gate exige quinta suite PostgreSQL, modalidades, transacciones/seguridad, contrato y UI; conserva todas las regresiones anteriores.
 
 # Arnés Codex de Ecclesia

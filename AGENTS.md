@@ -1,3 +1,5 @@
+Agenda RF16–21 autorizada: leer ../proyecto-ecclesia/docs/adr/008.md. Exigir sexta suite PostgreSQL, migración y vistas, regresiones de traslapes/zonas/DST, concurrencia y sustitución atómica. Preservar todo el gate anterior y protección del índice. Teams provisional no se implementa.
+
 Servicios/pláticas RF13–15 autorizados: leer docs/incremento-servicios.md. Gate exige quinta suite PostgreSQL, migración, vistas y regresiones de modalidades, concurrencia, rollback, CSRF y actualización; preservar 35.5 y controles previos. Solo catálogos de lectura nuevos; no ampliar permisos de gestión.
 
 # Instrucciones vigentes del arnés Ecclesia
