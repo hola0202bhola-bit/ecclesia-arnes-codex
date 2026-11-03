@@ -67,6 +67,7 @@ test(
         assert.match(output, /patrimonio\.test\.ts/);
         assert.match(output, /servicios\.test\.ts/);
         assert.match(output, /agenda\.test\.ts/);
+        assert.match(output, /diezmos\.test\.ts/);
         assert.match(output, /PostgreSQL real aislado/);
       }
     }
@@ -138,6 +139,10 @@ test(
         "prisma/migrations/202611030001_agenda/migration.sql",
         "views/agenda.ejs",
         "views/misas.ejs",
+        "tests/diezmos.test.ts",
+        "prisma/migrations/202611030002_diezmos/migration.sql",
+        "views/diezmos.ejs",
+        "views/diezmo-formulario.ejs",
       ]) {
         ok(exec(["rm", "--cached", "-f", path]));
         hook(
@@ -210,6 +215,21 @@ test(
         /traslapes entre iglesias/,
       );
       ok(exec(["add", agendaPath]));
+      const dineroPath = "src/modules/diezmos/domain/diezmo.ts";
+      const dinero = readFileSync(join(repo, dineroPath), "utf8");
+      const conversion = 'return BigInt(importe.replace(".", ""));';
+      assert.ok(dinero.includes(conversion));
+      writeFileSync(
+        join(repo, dineroPath),
+        dinero.replace(
+          conversion,
+          'return BigInt(importe.replace(".", "")) + 1n;',
+        ),
+      );
+      ok(exec(["add", dineroPath]));
+      writeFileSync(join(repo, dineroPath), dinero);
+      hook("centavos alterados solo en el índice", false, /centavos exactos/);
+      ok(exec(["add", dineroPath]));
       const pkgPath = join(repo, "package.json");
       const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
       pkg.scripts.test = 'node -e "process.exit(0)"';

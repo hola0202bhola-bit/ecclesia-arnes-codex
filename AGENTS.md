@@ -1,3 +1,5 @@
+Diezmos RF22–24 autorizados: leer ../proyecto-ecclesia/docs/adr/009.md. Exigir séptima suite PostgreSQL, migración/vistas, centavos exactos, promedio/pendientes/empates, 401/403, concurrencia/rollback y smoke financiero compilado. Rechazar centavos alterados solo en el índice; conservar todo lo anterior sin inflar cifras de casos. Roles de la matriz previa intactos. PC-13/19 y Teams provisional no se dan por confirmados.
+
 Agenda RF16–21 autorizada: leer ../proyecto-ecclesia/docs/adr/008.md. Exigir sexta suite PostgreSQL, migración y vistas, regresiones de traslapes/zonas/DST, concurrencia y sustitución atómica. Preservar todo el gate anterior y protección del índice. Teams provisional no se implementa.
 
 Servicios/pláticas RF13–15 autorizados: leer docs/incremento-servicios.md. Gate exige quinta suite PostgreSQL, migración, vistas y regresiones de modalidades, concurrencia, rollback, CSRF y actualización; preservar 35.5 y controles previos. Solo catálogos de lectura nuevos; no ampliar permisos de gestión.

@@ -19,9 +19,13 @@ export function checkProductInputs(project) {
     "tests/patrimonio.test.ts",
     "tests/servicios.test.ts",
     "tests/agenda.test.ts",
+    "tests/diezmos.test.ts",
     "prisma/migrations/202611030001_agenda/migration.sql",
     "views/agenda.ejs",
     "views/misas.ejs",
+    "prisma/migrations/202611030002_diezmos/migration.sql",
+    "views/diezmos.ejs",
+    "views/diezmo-formulario.ejs",
     "prisma/migrations/202611020002_servicios/migration.sql",
     "views/oferta.ejs",
     "views/oferta-formulario.ejs",
@@ -94,6 +98,7 @@ export function checkProduct(project) {
     "tests/patrimonio.test.ts",
     "tests/servicios.test.ts",
     "tests/agenda.test.ts",
+    "tests/diezmos.test.ts",
     "prisma/seed.ts",
   ]);
   run(["node_modules/eslint/bin/eslint.js", "src", "tests", "prisma/seed.ts"]);
@@ -147,6 +152,7 @@ export function checkProduct(project) {
     ["patrimonio.test.ts", 80],
     ["servicios.test.ts", 1],
     ["agenda.test.ts", 29],
+    ["diezmos.test.ts", 1],
   ]) {
     const result = report.testResults?.find((r) =>
       r.name.replaceAll("\\", "/").endsWith("/tests/" + suite),
@@ -222,6 +228,33 @@ export function checkProduct(project) {
       )
     )
       throw new Error("Regresión de agenda obligatoria ausente: " + regla);
+  }
+  const diezmos = report.testResults.find((r) =>
+    r.name.replaceAll("\\", "/").endsWith("/tests/diezmos.test.ts"),
+  );
+  for (const regla of [
+    "centavos exactos",
+    "una sola captura",
+    "corrección conserva cadena",
+    "concurrencia de alta",
+    "dos correcciones simultáneas",
+    "fallo de auditoría revierte",
+    "401/403",
+    "ámbito",
+    "ingreso inválido",
+    "cero registrado",
+    "día/semana/mes",
+    "horario y sacerdote real",
+    "CSRF/Origin",
+    "escape XSS",
+    "actualiza esquema previo",
+  ]) {
+    if (
+      !diezmos.assertionResults.some(
+        (r) => r.status === "passed" && r.fullName.includes(regla),
+      )
+    )
+      throw new Error("Regresión contable obligatoria ausente: " + regla);
   }
   const coverage = JSON.parse(
     readFileSync(join(project, "coverage/coverage-summary.json"), "utf8"),

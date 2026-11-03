@@ -3,7 +3,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { createServer } from "node:net";
-import { randomBytes } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import { spawn } from "node:child_process";
 import { once } from "node:events";
 import assert from "node:assert/strict";
@@ -222,6 +222,174 @@ try {
       `http://127.0.0.1:${httpPort}/personal/agenda/${iglesiaId}`,
     );
     assert.equal(agenda.status, 401);
+    // Flujo contable sobre servidor compilado y BD efímera, sin credenciales predeterminadas.
+    const fixture = new pg.Client({ connectionString: env.DATABASE_URL });
+    await fixture.connect();
+    const actor = randomUUID(),
+      treasury = randomUUID(),
+      padre = randomUUID(),
+      horario = randomUUID(),
+      ocurrencia = randomUUID(),
+      celebracion = randomUUID();
+    const clave = randomBytes(24).toString("hex");
+    const bcrypt = requireProject("bcryptjs");
+    const hash = await bcrypt.hash(clave, 12);
+    try {
+      await fixture.query(
+        'INSERT INTO "Usuario" (id,identificador,"passwordHash",rol,"iglesiaId") VALUES ($1,$2,$3,$4,$5),($6,$7,$3,$8,$5)',
+        [
+          actor,
+          "smoke-admin-" + actor,
+          hash,
+          "ADMIN_IGLESIA",
+          iglesiaId,
+          treasury,
+          "smoke-tesorero-" + treasury,
+          "TESORERO",
+        ],
+      );
+      await fixture.query(
+        'INSERT INTO "Sacerdote" (id,nombre) VALUES ($1,$2)',
+        [padre, "Padre ficticio smoke"],
+      );
+      await fixture.query('INSERT INTO "AsignacionSacerdote" VALUES ($1,$2)', [
+        iglesiaId,
+        padre,
+      ]);
+      await fixture.query('UPDATE "Iglesia" SET "zonaIana"=$1 WHERE id=$2', [
+        "America/Mexico_City",
+        iglesiaId,
+      ]);
+      await fixture.query(
+        'INSERT INTO "HorarioMisa" (id,"iglesiaId","sacerdoteId","diaSemana","horaLocal",tipo,idioma,desde,hasta,"zonaIana") VALUES ($1,$2,$3,1,$4,$5,$6,$7,$7,$8)',
+        [
+          horario,
+          iglesiaId,
+          padre,
+          "10:00",
+          "DIARIA",
+          "Español",
+          "2026-10-05",
+          "America/Mexico_City",
+        ],
+      );
+      await fixture.query(
+        'INSERT INTO "OcurrenciaMisa" (id,"horarioId","iglesiaId","sacerdoteId","fechaLocal","horaLocal","zonaIana",inicio,fin) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+        [
+          ocurrencia,
+          horario,
+          iglesiaId,
+          padre,
+          "2026-10-05",
+          "10:00",
+          "America/Mexico_City",
+          "2026-10-05T16:00:00Z",
+          "2026-10-05T17:00:00Z",
+        ],
+      );
+      await fixture.query(
+        'INSERT INTO "CelebracionMisa" (id,"ocurrenciaId","iglesiaId","previstoId","oficianteId","fechaLocal","horaLocal","zonaIana",inicio,fin,"actorId") VALUES ($1,$2,$3,$4,$4,$5,$6,$7,$8,$9,$10)',
+        [
+          celebracion,
+          ocurrencia,
+          iglesiaId,
+          padre,
+          "2026-10-05",
+          "10:00",
+          "America/Mexico_City",
+          "2026-10-05T16:00:00Z",
+          "2026-10-05T17:00:00Z",
+          actor,
+        ],
+      );
+    } finally {
+      await fixture.end();
+    }
+    const base = `http://127.0.0.1:${httpPort}`;
+    const cuenta = await fetch(base + "/api/v1/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        identificador: "smoke-tesorero-" + treasury,
+        password: clave,
+      }),
+    });
+    assert.equal(cuenta.status, 200);
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + (await cuenta.json()).accessToken,
+    };
+    const recurso =
+      base +
+      "/api/v1/iglesias/" +
+      iglesiaId +
+      "/celebraciones/" +
+      celebracion +
+      "/diezmo";
+    assert.equal(
+      (
+        await fetch(recurso, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ importe: "0.10" }),
+        })
+      ).status,
+      201,
+    );
+    assert.equal(
+      (
+        await fetch(recurso, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ importe: "0.20" }),
+        })
+      ).status,
+      409,
+    );
+    assert.equal(
+      (
+        await fetch(recurso, {
+          method: "PUT",
+          headers,
+          body: JSON.stringify({ importe: "0.30", version: 1 }),
+        })
+      ).status,
+      200,
+    );
+    assert.equal(
+      (
+        await fetch(recurso, {
+          method: "PUT",
+          headers,
+          body: JSON.stringify({ importe: "0.40", version: 1 }),
+        })
+      ).status,
+      409,
+    );
+    const reporteUrl =
+      base +
+      "/api/v1/iglesias/" +
+      iglesiaId +
+      "/reportes/diezmos?desde=2026-10-01&hasta=2026-10-31";
+    assert.equal((await fetch(reporteUrl)).status, 401);
+    const contable = await fetch(reporteUrl, { headers });
+    assert.equal(contable.status, 200);
+    assert.equal((await contable.json()).resumen.totalCentavos, "30");
+    const auditoria = await fetch(recurso + "/correcciones", { headers });
+    assert.equal(auditoria.status, 200);
+    assert.equal((await auditoria.json()).data.length, 2);
+    const paginaDiezmos =
+      base +
+      "/personal/diezmos/" +
+      iglesiaId +
+      "?desde=2026-10-01&hasta=2026-10-31";
+    assert.equal((await fetch(paginaDiezmos)).status, 401);
+    const contableWeb = await fetch(paginaDiezmos, { headers });
+    assert.equal(contableWeb.status, 200);
+    assert.match(await contableWeb.text(), /0.30/);
+    console.log(
+      "Smoke financiero compilado: captura 201, corrección 200, duplicado/versión 409, total exacto 30 centavos, historial y EJS privados 200, anónimo 401.",
+    );
     console.log(
       "Smoke HTTP del servidor compilado: API/EJS/login/catálogos/patrimonio/ranking/misas 200; usuarios, gestión web/patrimonio/agenda y alta anónima 401.",
     );
@@ -262,6 +430,16 @@ try {
           misas: 200,
           misasWeb: 200,
           anonymousAgendaManagement: 401,
+          diezmos: {
+            alta: 201,
+            correccion: 200,
+            duplicado: 409,
+            versionObsoleta: 409,
+            totalCentavos: "30",
+            historial: 200,
+            web: 200,
+            anonimo: 401,
+          },
           browserOrMobileTest: false,
         },
       },
