@@ -66,6 +66,7 @@ test(
         assert.match(output, /gestion-iglesias\.test\.ts/);
         assert.match(output, /patrimonio\.test\.ts/);
         assert.match(output, /servicios\.test\.ts/);
+        assert.match(output, /agenda\.test\.ts/);
         assert.match(output, /PostgreSQL real aislado/);
       }
     }
@@ -133,6 +134,10 @@ test(
         "tests/servicios.test.ts",
         "prisma/migrations/202611020002_servicios/migration.sql",
         "views/oferta-formulario.ejs",
+        "tests/agenda.test.ts",
+        "prisma/migrations/202611030001_agenda/migration.sql",
+        "views/agenda.ejs",
+        "views/misas.ejs",
       ]) {
         ok(exec(["rm", "--cached", "-f", path]));
         hook(
@@ -187,6 +192,24 @@ test(
         /mismo tipo admite fijo, gratuito y donativo/,
       );
       ok(exec(["add", ofertaPath]));
+      const agendaPath = "src/modules/agenda/domain/agenda.ts";
+      const agenda = readFileSync(join(repo, agendaPath), "utf8");
+      assert.match(agenda, /return a.inicio < b.fin && b.inicio < a.fin;/);
+      writeFileSync(
+        join(repo, agendaPath),
+        agenda.replace(
+          "return a.inicio < b.fin && b.inicio < a.fin;",
+          "return a.inicio < b.fin && b.inicio < a.inicio;",
+        ),
+      );
+      ok(exec(["add", agendaPath]));
+      writeFileSync(join(repo, agendaPath), agenda);
+      hook(
+        "traslapes desactivados solo en el índice",
+        false,
+        /traslapes entre iglesias/,
+      );
+      ok(exec(["add", agendaPath]));
       const pkgPath = join(repo, "package.json");
       const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
       pkg.scripts.test = 'node -e "process.exit(0)"';

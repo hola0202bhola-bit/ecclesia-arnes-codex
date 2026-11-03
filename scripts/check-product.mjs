@@ -18,6 +18,10 @@ export function checkProductInputs(project) {
     "tests/gestion-iglesias.test.ts",
     "tests/patrimonio.test.ts",
     "tests/servicios.test.ts",
+    "tests/agenda.test.ts",
+    "prisma/migrations/202611030001_agenda/migration.sql",
+    "views/agenda.ejs",
+    "views/misas.ejs",
     "prisma/migrations/202611020002_servicios/migration.sql",
     "views/oferta.ejs",
     "views/oferta-formulario.ejs",
@@ -89,6 +93,7 @@ export function checkProduct(project) {
     "tests/gestion-iglesias.test.ts",
     "tests/patrimonio.test.ts",
     "tests/servicios.test.ts",
+    "tests/agenda.test.ts",
     "prisma/seed.ts",
   ]);
   run(["node_modules/eslint/bin/eslint.js", "src", "tests", "prisma/seed.ts"]);
@@ -141,6 +146,7 @@ export function checkProduct(project) {
     ["gestion-iglesias.test.ts", 49],
     ["patrimonio.test.ts", 80],
     ["servicios.test.ts", 1],
+    ["agenda.test.ts", 29],
   ]) {
     const result = report.testResults?.find((r) =>
       r.name.replaceAll("\\", "/").endsWith("/tests/" + suite),
@@ -188,6 +194,34 @@ export function checkProduct(project) {
       )
     )
       throw new Error("Regresión de oferta obligatoria ausente: " + regla);
+  }
+  const agenda = report.testResults.find((r) =>
+    r.name.replaceAll("\\", "/").endsWith("/tests/agenda.test.ts"),
+  );
+  for (const regla of [
+    "identidad compartida",
+    "duración predeterminada 60",
+    "traslapes entre iglesias",
+    "zonas distintas comparan instantes",
+    "DST: detecta conflicto",
+    "concurrencia entre iglesias",
+    "READ COMMITTED",
+    "dos cambios simultáneos",
+    "sustitución exige motivo",
+    "sustituto ocupado",
+    "concurrencia de celebraciones",
+    "fallo de auditoría revierte",
+    "CSRF/Origin",
+    "escape EJS",
+    "actualiza esquema previo",
+    "protege zona",
+  ]) {
+    if (
+      !agenda.assertionResults.some(
+        (r) => r.status === "passed" && r.fullName.includes(regla),
+      )
+    )
+      throw new Error("Regresión de agenda obligatoria ausente: " + regla);
   }
   const coverage = JSON.parse(
     readFileSync(join(project, "coverage/coverage-summary.json"), "utf8"),

@@ -208,8 +208,22 @@ try {
       );
       assert.equal(gestionOferta.status, 401);
     }
+    const misas = await fetch(
+      `http://127.0.0.1:${httpPort}/api/v1/iglesias/${iglesiaId}/misas?desde=2026-11-02`,
+    );
+    assert.equal(misas.status, 200);
+    assert.ok(Array.isArray((await misas.json()).data));
+    const misasWeb = await fetch(
+      `http://127.0.0.1:${httpPort}/iglesias/${iglesiaId}/misas?desde=2026-11-02`,
+    );
+    assert.equal(misasWeb.status, 200);
+    assert.match(await misasWeb.text(), /Misas previstas/);
+    const agenda = await fetch(
+      `http://127.0.0.1:${httpPort}/personal/agenda/${iglesiaId}`,
+    );
+    assert.equal(agenda.status, 401);
     console.log(
-      "Smoke HTTP del servidor compilado: API/EJS/login/catálogos/patrimonio/ranking 200; usuarios, gestión web/patrimonio y alta anónima 401.",
+      "Smoke HTTP del servidor compilado: API/EJS/login/catálogos/patrimonio/ranking/misas 200; usuarios, gestión web/patrimonio/agenda y alta anónima 401.",
     );
   } finally {
     if (web.exitCode === null) {
@@ -245,6 +259,9 @@ try {
           servicios: 200,
           platicas: 200,
           anonymousOfferManagement: 401,
+          misas: 200,
+          misasWeb: 200,
+          anonymousAgendaManagement: 401,
           browserOrMobileTest: false,
         },
       },

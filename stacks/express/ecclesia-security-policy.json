@@ -540,6 +540,101 @@
       "operationId": "servicios_tiposPlatica",
       "roles": ["PUBLICO"],
       "security": []
+    },
+    "GET /iglesias/{iglesiaId}/misas": {
+      "operationId": "agendaV1_semanaPublica",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "GET /iglesias/{iglesiaId}/agenda/sacerdotes": {
+      "operationId": "agendaV1_listarPadres",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /iglesias/{iglesiaId}/agenda/sacerdotes": {
+      "operationId": "agendaV1_registrarPadre",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /iglesias/{iglesiaId}/agenda/asignaciones": {
+      "operationId": "agendaV1_vincularPadre",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "PATCH /iglesias/{iglesiaId}/agenda/sacerdotes/{id}": {
+      "operationId": "agendaV1_nombrePadre",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /iglesias/{iglesiaId}/agenda/horarios": {
+      "operationId": "agendaV1_listarHorarios",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /iglesias/{iglesiaId}/agenda/horarios": {
+      "operationId": "agendaV1_registrarHorario",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "PUT /iglesias/{iglesiaId}/agenda/horarios/{id}": {
+      "operationId": "agendaV1_editarHorario",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /iglesias/{iglesiaId}/agenda/sacerdotes/{id}/semana": {
+      "operationId": "agendaV1_agendaPadre",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /iglesias/{iglesiaId}/agenda/celebraciones": {
+      "operationId": "agendaV1_listarHechos",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /iglesias/{iglesiaId}/agenda/celebraciones": {
+      "operationId": "agendaV1_registrarHecho",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     }
   }
 }
