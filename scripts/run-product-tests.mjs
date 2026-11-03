@@ -1,3 +1,4 @@
+import { URLSearchParams } from "node:url";
 import { createRequire } from "node:module";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -84,7 +85,7 @@ try {
   // Configuración del gate escrita por el arnés; no hereda exclusiones del proyecto.
   writeFileSync(
     "evidence/gate-vitest.config.mjs",
-    `export default {test:{include:['tests/**/*.test.ts'],fileParallelism:false,testTimeout:15000,hookTimeout:15000,coverage:{provider:'v8',include:['src/**/*.ts'],exclude:['src/composition/server.ts'],reporter:['text','json-summary','html'],thresholds:{lines:70,statements:70,functions:70,branches:70}}}};\n`,
+    `export default {test:{include:['tests/**/*.test.ts'],fileParallelism:false,bail:1,testTimeout:15000,hookTimeout:15000,coverage:{provider:'v8',include:['src/**/*.ts'],exclude:['src/composition/server.ts'],reporter:['text','json-summary','html'],thresholds:{lines:70,statements:70,functions:70,branches:70}}}};\n`,
   );
   await run([
     "node_modules/vitest/vitest.mjs",
@@ -105,7 +106,12 @@ try {
     });
   });
   const web = spawn(process.execPath, ["dist/composition/server.js"], {
-    env: { ...env, JWT_SECRET: env.TEST_JWT_SECRET, PORT: String(httpPort) },
+    env: {
+      ...env,
+      JWT_SECRET: env.TEST_JWT_SECRET,
+      PORT: String(httpPort),
+      APP_ORIGIN: "http://127.0.0.1:" + httpPort,
+    },
     stdio: ["ignore", "pipe", "pipe"],
     windowsHide: true,
   });
@@ -387,6 +393,146 @@ try {
     const contableWeb = await fetch(paginaDiezmos, { headers });
     assert.equal(contableWeb.status, 200);
     assert.match(await contableWeb.text(), /0.30/);
+    // Flujo RF25–31 sobre servidor compilado. Credenciales efímeras solo en memoria.
+    const adminLogin = await fetch(base + "/api/v1/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        identificador: "smoke-admin-" + actor,
+        password: clave,
+      }),
+    });
+    assert.equal(adminLogin.status, 200);
+    const adminHeaders = {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + (await adminLogin.json()).accessToken,
+    };
+    const origin = base;
+    const formulario = await fetch(base + "/api/v1/solicitudes/acceso");
+    assert.equal(formulario.status, 200);
+    const csrfVisitante = (await formulario.json()).csrf;
+    const cookieVisitante = formulario.headers
+      .getSetCookie()
+      .map((v) => v.split(";")[0])
+      .join("; ");
+    const visitanteHeaders = {
+      "Content-Type": "application/json",
+      Cookie: cookieVisitante,
+      Origin: origin,
+      "X-CSRF-Token": csrfVisitante,
+    };
+    const ofertasUrl =
+      base + "/api/v1/iglesias/" + iglesiaId + "/ofertas-espacio";
+    assert.equal(
+      (
+        await fetch(ofertasUrl + "/NICHO", {
+          method: "PUT",
+          headers: adminHeaders,
+          body: JSON.stringify({ activo: true, version: 0 }),
+        })
+      ).status,
+      200,
+    );
+    const ofertasPublicas = await (await fetch(ofertasUrl)).json();
+    assert.deepEqual(ofertasPublicas.data, [{ tipo: "NICHO" }]);
+    const solicitudUrl =
+      base + "/api/v1/iglesias/" + iglesiaId + "/solicitudes";
+    const envio = await fetch(solicitudUrl, {
+      method: "POST",
+      headers: visitanteHeaders,
+      body: JSON.stringify({
+        tipo: "NICHO",
+        nombre: "Solicitante ficticio smoke",
+        contacto: "smoke@example.invalid",
+        peticionId: randomUUID(),
+      }),
+    });
+    assert.equal(envio.status, 201);
+    const recibo = await envio.json();
+    const seguimientoUrl = base + "/api/v1/solicitudes/" + recibo.folio;
+    assert.equal((await fetch(seguimientoUrl)).status, 404);
+    const seguimiento = await fetch(seguimientoUrl, {
+      headers: { "X-Solicitud-Clave": recibo.clave },
+    });
+    assert.equal(seguimiento.status, 200);
+    const seguimientoDatos = await seguimiento.json();
+    assert.equal(seguimientoDatos.estado, "REGISTRADA");
+    for (const campo of [
+      "nombre",
+      "contacto",
+      "claveHash",
+      "clave",
+      "historial",
+    ])
+      assert.equal(campo in seguimientoDatos, false);
+    const solicitudesPrivadas = await fetch(solicitudUrl, {
+      headers: adminHeaders,
+    });
+    assert.equal(solicitudesPrivadas.status, 200);
+    const solicitudId = (await solicitudesPrivadas.json()).data[0].id;
+    const revision = await fetch(
+      solicitudUrl + "/" + solicitudId + "/revision",
+      {
+        method: "POST",
+        headers: adminHeaders,
+        body: JSON.stringify({
+          resultado: "COTIZAR",
+          version: 1,
+          precio: "0.10",
+          condiciones: "Servicio individual ficticio, sin pago ni asignación",
+        }),
+      },
+    );
+    assert.equal(revision.status, 200);
+    const cotizada = await revision.json();
+    assert.equal(cotizada.cotizacion.precio, "0.10");
+    assert.equal(
+      new Date(cotizada.cotizacion.vence) -
+        new Date(cotizada.cotizacion.emitida),
+      15 * 86400000,
+    );
+    const seguimientoEjs = await fetch(base + "/solicitudes/seguimiento", {
+      method: "POST",
+      headers: {
+        ...visitanteHeaders,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({ ...recibo, _csrf: csrfVisitante }),
+    });
+    assert.equal(seguimientoEjs.status, 200);
+    assert.match(await seguimientoEjs.text(), /Aceptar cotización/);
+    assert.equal(
+      (
+        await fetch(seguimientoUrl + "/aceptar", {
+          method: "POST",
+          headers: { ...visitanteHeaders, "X-Solicitud-Clave": recibo.clave },
+          body: JSON.stringify({ version: 2 }),
+        })
+      ).status,
+      200,
+    );
+    assert.equal(
+      (
+        await fetch(seguimientoUrl + "/cancelar", {
+          method: "POST",
+          headers: { ...visitanteHeaders, "X-Solicitud-Clave": recibo.clave },
+          body: JSON.stringify({ version: 3 }),
+        })
+      ).status,
+      409,
+    );
+    assert.equal(
+      (await fetch(base + "/personal/solicitudes/" + iglesiaId)).status,
+      401,
+    );
+    const espaciosEjs = await fetch(
+      base + "/iglesias/" + iglesiaId + "/espacios",
+    );
+    assert.equal(espaciosEjs.status, 200);
+    assert.match(await espaciosEjs.text(), /Solicitar sin cuenta/);
+    console.log(
+      "Smoke solicitudes compilado: oferta sin precio 200, alta sin cuenta 201, seguimiento inválido 404/válido 200, cotización exacta/vigencia 200, EJS 200, aceptación 200, cancelación aceptada 409, gestión anónima 401.",
+    );
     console.log(
       "Smoke financiero compilado: captura 201, corrección 200, duplicado/versión 409, total exacto 30 centavos, historial y EJS privados 200, anónimo 401.",
     );
@@ -440,6 +586,19 @@ try {
             web: 200,
             anonimo: 401,
           },
+          solicitudes: {
+            ofertaPublica: 200,
+            alta: 201,
+            seguimientoInvalido: 404,
+            seguimientoValido: 200,
+            cotizacion: 200,
+            precio: "0.10",
+            vigenciaHoras: 360,
+            ejs: 200,
+            aceptacion: 200,
+            cancelarAceptada: 409,
+            gestionAnonima: 401,
+          },
           browserOrMobileTest: false,
         },
       },
@@ -453,6 +612,11 @@ try {
 } finally {
   if (started) await cluster.stop();
   // Ruta generada por mkdtemp, nunca un destino proporcionado por el usuario.
-  rmSync(temp, { recursive: true, force: true });
+  rmSync(temp, {
+    recursive: true,
+    force: true,
+    maxRetries: 20,
+    retryDelay: 250,
+  });
   console.log("PostgreSQL temporal detenido y archivos de la base eliminados.");
 }

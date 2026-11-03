@@ -18,7 +18,7 @@ const source =
   fileURLToPath(new URL("../../proyecto-ecclesia", import.meta.url));
 test(
   "H02/H03 índice de producto: positivo y rechazos preparados sin usar working tree",
-  { timeout: 1200000 },
+  { timeout: 1800000 },
   () => {
     const root = mkdtempSync(join(tmpdir(), "ecclesia-product-index-"));
     const repo = join(root, "project");
@@ -68,6 +68,7 @@ test(
         assert.match(output, /servicios\.test\.ts/);
         assert.match(output, /agenda\.test\.ts/);
         assert.match(output, /diezmos\.test\.ts/);
+        assert.match(output, /solicitudes\.test\.ts/);
         assert.match(output, /PostgreSQL real aislado/);
       }
     }
@@ -143,6 +144,14 @@ test(
         "prisma/migrations/202611030002_diezmos/migration.sql",
         "views/diezmos.ejs",
         "views/diezmo-formulario.ejs",
+        "tests/solicitudes.test.ts",
+        "prisma/migrations/202611030003_solicitudes/migration.sql",
+        "views/espacios.ejs",
+        "views/solicitud-recibo.ejs",
+        "views/solicitud-acceso.ejs",
+        "views/solicitud-seguimiento.ejs",
+        "views/solicitudes-gestion.ejs",
+        "views/solicitud-revision.ejs",
       ]) {
         ok(exec(["rm", "--cached", "-f", path]));
         hook(
@@ -230,6 +239,33 @@ test(
       writeFileSync(join(repo, dineroPath), dinero);
       hook("centavos alterados solo en el índice", false, /centavos exactos/);
       ok(exec(["add", dineroPath]));
+      const solicitudPath = "src/modules/solicitudes/domain/solicitud.ts";
+      const solicitud = readFileSync(join(repo, solicitudPath), "utf8");
+      const frontera = "ahora.getTime() >= vence.getTime()";
+      assert.ok(solicitud.includes(frontera));
+      writeFileSync(
+        join(repo, solicitudPath),
+        solicitud.replace(frontera, "ahora.getTime() > vence.getTime()"),
+      );
+      ok(
+        spawnSync(
+          process.execPath,
+          [
+            join(source, "node_modules/prettier/bin/prettier.cjs"),
+            "--write",
+            solicitudPath,
+          ],
+          { cwd: repo, encoding: "utf8" },
+        ),
+      );
+      ok(exec(["add", solicitudPath]));
+      writeFileSync(join(repo, solicitudPath), solicitud);
+      hook(
+        "frontera de vencimiento alterada solo en índice",
+        false,
+        /frontera de 15 días|frontera exacta/,
+      );
+      ok(exec(["add", solicitudPath]));
       const pkgPath = join(repo, "package.json");
       const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
       pkg.scripts.test = 'node -e "process.exit(0)"';

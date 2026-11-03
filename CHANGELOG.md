@@ -1,3 +1,7 @@
+## RF25–31 — 2026-11-03
+
+Controles reales de solicitudes: suite PostgreSQL, migración/vistas, contrato estricto y matriz sin ampliación de personal; smoke compilado desde alta anónima a aceptación y rechazo de cancelación aceptada. El índice rechaza frontera de vencimiento alterada y ausencia de suite/migración/vistas. Conserva controles de módulos anteriores.
+
 ## 0.6.0 — 2026-11-03
 
 Gate integral ejecutado con salida 0: 89/89 arnés, 315/315 producto, PostgreSQL real y 27 escenarios de índice con preservación completa. Cobertura de líneas 99.28%; sin aceptación docente/humana atribuida.
@@ -71,3 +75,5 @@ Correcciones incrementales autorizadas a partir de la auditoría real de revisi�
 Se añaden regresiones positivas/negativas y muestras contractuales de H06/H07/H08/H13. Contrato y matriz vigente H12 documentados en el proyecto; 23 PC y cinco ADR continúan pendientes. Se conservan evidencias e historial 0.1.0 sin convertirlos en resultados de 0.2.0. H02 y cobertura de producto siguen pendientes. No se crean commits/remotos ni se atribuye revisión humana.
 
 El runner limpia el contexto heredado de node:test para ejecutar realmente las pruebas internas del hook durante regresiones. Se verifica el conteo ejecutado y se rechazan rutas que colisionan al materializarlas y enlaces en el índice. Esta mejora surgió de revisar salidas reales, no de un fallo atribuido al alumno.
+
+RF25–31 validado: 93/93 arnés, 343/343 producto, PostgreSQL real y 36 escenarios de índice. Fixture temporal con formato válido, preflight exclusivamente del índice y detención al primer fallo sin omitir casos válidos. Sin aceptación docente.

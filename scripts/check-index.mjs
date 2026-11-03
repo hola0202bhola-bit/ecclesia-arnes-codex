@@ -28,9 +28,16 @@ const temp = mkdtempSync(join(tmpdir(), "ecclesia-index-"));
 let files = 0;
 const portablePaths = new Map();
 try {
-  for (const entry of git(["ls-tree", "-rz", "--full-tree", tree])
+  const entries = git(["ls-tree", "-rz", "--full-tree", tree])
     .split("\0")
-    .filter(Boolean)) {
+    .filter(Boolean);
+  // Preflight solo puede rechazar: nunca acepta ni usa archivos del working tree.
+  // Los índices completos siguen materializando/cotejando cada blob y ejecutando todo el gate.
+  const indexedPaths = new Set(
+    entries.map((entry) => entry.slice(entry.indexOf("\t") + 1)),
+  );
+  checkProductInputs(temp, indexedPaths);
+  for (const entry of entries) {
     const match = /^(\d+) blob ([a-f0-9]+)\t(.+)$/.exec(entry);
     if (!match || !["100644", "100755"].includes(match[1]))
       throw new Error("Solo archivos regulares en snapshot: " + entry);

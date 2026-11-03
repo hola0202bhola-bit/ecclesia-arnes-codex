@@ -635,6 +635,38 @@
           "PersonalJWT": []
         }
       ]
+    },
+    "GET /solicitudes/acceso": {
+      "operationId": "solicitudes_accesoFormulario",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "GET /iglesias/{iglesiaId}/ofertas-espacio/gestion": {
+      "operationId": "solicitudes_ofertasGestion",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "PUT /iglesias/{iglesiaId}/ofertas-espacio/{tipo}": {
+      "operationId": "solicitudes_guardarTipo",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /iglesias/{iglesiaId}/solicitudes/{solicitudId}/revision": {
+      "operationId": "solicitudes_revision",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     }
   }
 }

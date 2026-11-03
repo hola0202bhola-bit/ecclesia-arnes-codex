@@ -3,9 +3,13 @@ import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { sourceFiles } from "./check-architecture.mjs";
-export function checkProductInputs(project) {
+export function checkProductInputs(project, indexedPaths) {
   project = resolve(project);
-  const files = sourceFiles(project);
+  const files = indexedPaths
+    ? [...indexedPaths].filter((path) =>
+        /^src\/.*\.(?:[cm]?[jt]s|[jt]sx)$/.test(path),
+      )
+    : sourceFiles(project);
   if (!files.length) return files;
   for (const required of [
     "package.json",
@@ -20,6 +24,14 @@ export function checkProductInputs(project) {
     "tests/servicios.test.ts",
     "tests/agenda.test.ts",
     "tests/diezmos.test.ts",
+    "tests/solicitudes.test.ts",
+    "prisma/migrations/202611030003_solicitudes/migration.sql",
+    "views/espacios.ejs",
+    "views/solicitud-recibo.ejs",
+    "views/solicitud-acceso.ejs",
+    "views/solicitud-seguimiento.ejs",
+    "views/solicitudes-gestion.ejs",
+    "views/solicitud-revision.ejs",
     "prisma/migrations/202611030001_agenda/migration.sql",
     "views/agenda.ejs",
     "views/misas.ejs",
@@ -52,7 +64,11 @@ export function checkProductInputs(project) {
     "views/ficha.ejs",
     "docs/api-referencia-revision03.json",
   ])
-    if (!existsSync(join(project, required)))
+    if (
+      indexedPaths
+        ? !indexedPaths.has(required)
+        : !existsSync(join(project, required))
+    )
       throw new Error("Pipeline de producto incompleto: falta " + required);
   return files;
 }
@@ -99,6 +115,7 @@ export function checkProduct(project) {
     "tests/servicios.test.ts",
     "tests/agenda.test.ts",
     "tests/diezmos.test.ts",
+    "tests/solicitudes.test.ts",
     "prisma/seed.ts",
   ]);
   run(["node_modules/eslint/bin/eslint.js", "src", "tests", "prisma/seed.ts"]);
@@ -149,10 +166,11 @@ export function checkProduct(project) {
     ["iglesias.test.ts", 70],
     ["identidad.test.ts", 30],
     ["gestion-iglesias.test.ts", 49],
-    ["patrimonio.test.ts", 80],
-    ["servicios.test.ts", 1],
+    ["patrimonio.test.ts", 85],
+    ["servicios.test.ts", 30],
     ["agenda.test.ts", 29],
-    ["diezmos.test.ts", 1],
+    ["diezmos.test.ts", 22],
+    ["solicitudes.test.ts", 28],
   ]) {
     const result = report.testResults?.find((r) =>
       r.name.replaceAll("\\", "/").endsWith("/tests/" + suite),
@@ -255,6 +273,32 @@ export function checkProduct(project) {
       )
     )
       throw new Error("Regresión contable obligatoria ausente: " + regla);
+  }
+  const solicitudes = report.testResults.find((r) =>
+    r.name.replaceAll("\\", "/").endsWith("/tests/solicitudes.test.ts"),
+  );
+  for (const regla of [
+    "precio exacto y frontera de 15 días",
+    "solo hash persistido",
+    "oferta pública sin precio",
+    "401/403 y ámbito",
+    "respuestas uniformes",
+    "limitación persistente",
+    "limitación atómica concurrente",
+    "concurrencia de revisión",
+    "concurrencia de decisiones",
+    "reloj releído después del bloqueo",
+    "fallo de auditoría revierte",
+    "CSRF/Origin",
+    "escape XSS",
+    "actualiza esquema previo",
+  ]) {
+    if (
+      !solicitudes.assertionResults.some(
+        (r) => r.status === "passed" && r.fullName.includes(regla),
+      )
+    )
+      throw new Error("Regresión de solicitudes obligatoria ausente: " + regla);
   }
   const coverage = JSON.parse(
     readFileSync(join(project, "coverage/coverage-summary.json"), "utf8"),
