@@ -667,6 +667,60 @@
           "PersonalJWT": []
         }
       ]
+    },
+    "GET /catalogos/importaciones-localidades": {
+      "operationId": "inegi_importaciones",
+      "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /catalogos/importaciones-localidades": {
+      "operationId": "inegi_previa",
+      "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /catalogos/importaciones-localidades/{importacionId}": {
+      "operationId": "inegi_detalle",
+      "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "GET /catalogos/importaciones-localidades/{importacionId}/original": {
+      "operationId": "inegi_original",
+      "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /catalogos/importaciones-localidades/{importacionId}/aplicar": {
+      "operationId": "inegi_aplicar",
+      "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /catalogos/importaciones-localidades/{importacionId}/revertir": {
+      "operationId": "inegi_revertir",
+      "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     }
   }
 }

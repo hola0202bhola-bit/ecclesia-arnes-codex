@@ -12,6 +12,11 @@ export function checkProductInputs(project, indexedPaths) {
     : sourceFiles(project);
   if (!files.length) return files;
   for (const required of [
+    "tests/importacion-localidades.test.ts",
+    "views/importacion-localidades.ejs",
+    "prisma/migrations/202611040003_localidades/migration.sql",
+    "prisma/fuentes/rf05/21114.json",
+    "prisma/fuentes/rf05/manifest.json",
     "public/ecclesia.css",
     "public/iglesia.svg",
     "views/partials/header.ejs",
@@ -132,6 +137,7 @@ export function checkProduct(project) {
     "--moduleResolution",
     "NodeNext",
     ...files,
+    "tests/importacion-localidades.test.ts",
     "tests/ui-cierre-criterios.test.ts",
     "tests/iglesias.test.ts",
     "tests/identidad.test.ts",
@@ -199,6 +205,7 @@ export function checkProduct(project) {
   )
     throw new Error("Reporte de pruebas de producto inválido/vacío/omitido");
   for (const [suite, minimum] of [
+    ["importacion-localidades.test.ts", 29],
     ["iglesias.test.ts", 70],
     ["identidad.test.ts", 30],
     ["gestion-iglesias.test.ts", 49],
@@ -223,6 +230,28 @@ export function checkProduct(project) {
   const patrimonio = report.testResults.find((r) =>
     r.name.replaceAll("\\", "/").endsWith("/tests/patrimonio.test.ts"),
   );
+  const localidades = report.testResults.find((r) =>
+    r.name
+      .replaceAll("\\", "/")
+      .endsWith("/tests/importacion-localidades.test.ts"),
+  );
+  for (const regla of [
+    "vista previa no escribe",
+    "aplicación idempotente",
+    "dos aplicaciones concurrentes",
+    "fallo de auditoría revierte",
+    "rollback bloquea localidad en uso",
+    "PostgreSQL rechaza jerarquía",
+    "CSRF/Origin",
+    "undécima migración",
+  ]) {
+    if (
+      !localidades.assertionResults.some(
+        (r) => r.status === "passed" && r.fullName.includes(regla),
+      )
+    )
+      throw new Error("Regresión INEGI obligatoria ausente: " + regla);
+  }
   for (const regla of [
     "reproduce exactamente P074",
     "dos cambios simultáneos",

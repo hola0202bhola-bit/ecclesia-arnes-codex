@@ -1,3 +1,7 @@
+## Entrega del 4 de noviembre de 2026 — RF05 geográfico
+
+Desde esta carpeta: npm ci y **npm run check -- ../proyecto-ecclesia**. Conserva las 380 pruebas previas del producto y 97 del arnés; añade suite PostgreSQL INEGI, contratos/fuentes/migración/vista y smoke compilado sobre CT20 efímero, sin usar DATABASE_URL ajena. El producto mantiene UI aprobada y Teams excluido. [Flujo, comandos y guion](../proyecto-ecclesia/README.md), [resultados finales](../proyecto-ecclesia/docs/estado-producto.md). Los resultados anteriores que siguen son históricos; RF05 geográfico no significa catálogo nacional completo.
+
 Validación final UI/RF04/RF11: `npm run check -- ../proyecto-ecclesia`, salida 0, **97/97 arnés y 380/380 producto**, sin omitidas. **51 escenarios del índice** preservados (uno válido, 50 rechazos). PostgreSQL 18.6, diez migraciones, dos bases efímeras, doble seed y smoke compilado CSS/CSP/cierre/criterios/huellas CT20. 35.5 conservado. Recorrido visual separado en el estado del producto; PC04/08 provisionales y RF05 nacional pendiente.
 
 ## Incremento final: interfaz, RF04 y RF11

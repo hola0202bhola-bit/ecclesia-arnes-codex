@@ -1,3 +1,7 @@
+## 4 de noviembre de 2026 — gate RF05 geográfico
+
+Exige suite real de importación (29 casos), undécima migración, vista y originales/manifest; contratos/roles de seis operaciones. Smoke compilado prepara/aplica/repite/revierte el snapshot en CT20 efímero con huellas de módulos preservadas. Cinco rechazos nuevos por ausencia de archivos solo en índice, manteniendo todos los anteriores y 35.5. No se declara RF05 nacional ni aceptación docente.
+
 ## Incremento final — UI / RF04 / RF11
 
 - Exigir CSS/SVG y parciales/vistas, décima migración/suite, contrato de cinco operaciones existentes sin ampliar roles.

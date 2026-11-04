@@ -172,6 +172,11 @@ test(
         "views/iglesia-historial.ejs",
         "tests/ui-cierre-criterios.test.ts",
         "prisma/migrations/202611040002_cierre_criterios/migration.sql",
+        "tests/importacion-localidades.test.ts",
+        "views/importacion-localidades.ejs",
+        "prisma/migrations/202611040003_localidades/migration.sql",
+        "prisma/fuentes/rf05/21114.json",
+        "prisma/fuentes/rf05/manifest.json",
       ]) {
         ok(exec(["rm", "--cached", "-f", path]));
         hook(

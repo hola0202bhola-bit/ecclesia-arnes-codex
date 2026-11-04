@@ -155,6 +155,59 @@ export async function smokeDemo(env) {
           headers,
           body: JSON.stringify(body),
         });
+      // RF05 sobre la misma base CT20 efímera; original versionado sin depender de red.
+      const catalogosUrl = "/api/v1/catalogos/importaciones-localidades";
+      assert.equal((await fetch(base + catalogosUrl)).status, 401);
+      const previa = await send(catalogosUrl, {
+        estadoClave: "21",
+        municipioClave: "114",
+        origen: "SNAPSHOT",
+      });
+      assert.equal(previa.status, 201);
+      const lote = await previa.json();
+      assert.equal(lote.diferencias.altas.length, 143);
+      assert.equal(lote.diferencias.sinCambio, 1);
+      const rutaLote = catalogosUrl + "/" + lote.id;
+      assert.equal(
+        (await fetch(base + rutaLote + "/original", { headers })).status,
+        200,
+      );
+      assert.equal(
+        (
+          await fetch(base + "/personal/catalogos/localidades/" + lote.id, {
+            headers,
+          })
+        ).status,
+        200,
+      );
+      assert.equal(
+        (
+          await send(rutaLote + "/aplicar", {
+            motivo: "Smoke oficial revisado",
+          })
+        ).status,
+        200,
+      );
+      assert.equal(
+        (
+          await send(rutaLote + "/aplicar", {
+            motivo: "Repetición idempotente",
+          })
+        ).status,
+        200,
+      );
+      assert.equal(
+        (
+          await send(rutaLote + "/revertir", {
+            motivo: "Reversión aislada del smoke",
+          })
+        ).status,
+        200,
+      );
+      assert.deepEqual(await counts(), antes);
+      console.log(
+        "Smoke INEGI compilado: vista previa/original/EJS, aplicación idempotente y reversión; huellas CT20 conservadas.",
+      );
       const current = await (
         await fetch(base + "/api/v1/iglesias/" + iglesia)
       ).json();
