@@ -1,3 +1,7 @@
+## CT20 y RF02 — 2026-11-03
+
+Nueva suite obligatoria de demo, segunda base PostgreSQL efímera y smoke compilado de ficha integrada. Nuevas ausencias obligatorias y mutación semántica CT20 solo en índice. Se conserva clasificación de fixtures sin producto y se verifica que las bases y credenciales locales estén excluidas de las copias Git. No reduce las suites anteriores ni cierra RF/PC pendientes.
+
 ## RF25–31 — 2026-11-03
 
 Controles reales de solicitudes: suite PostgreSQL, migración/vistas, contrato estricto y matriz sin ampliación de personal; smoke compilado desde alta anónima a aceptación y rechazo de cancelación aceptada. El índice rechaza frontera de vencimiento alterada y ausencia de suite/migración/vistas. Conserva controles de módulos anteriores.
