@@ -61,7 +61,7 @@ test("RF07–10/12: operaciones ejecutables conservan política explícita y DTO
     api.paths["/criterios-patrimoniales/{criterioId}/activar"].post[
       "x-implementation"
     ],
-    "DISEÑO_NO_IMPLEMENTADO",
+    "IMPLEMENTADO",
   );
 });
 test("RF07: fecha exclusiva, campos completos, booleano estricto y sin ámbito aportado por cliente", () => {

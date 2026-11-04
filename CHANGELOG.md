@@ -1,3 +1,9 @@
+## Incremento final — UI / RF04 / RF11
+
+- Exigir CSS/SVG y parciales/vistas, décima migración/suite, contrato de cinco operaciones existentes sin ampliar roles.
+- Smoke compilado sobre CT20: assets/CSP, cierre y reapertura, exclusión pública, huellas de datos preservadas y criterio activo en ranking.
+- Tres regresiones contractuales nuevas y siete escenarios adicionales del índice, conservando los anteriores.
+
 ## CT20 y RF02 — 2026-11-03
 
 Nueva suite obligatoria de demo, segunda base PostgreSQL efímera y smoke compilado de ficha integrada. Nuevas ausencias obligatorias y mutación semántica CT20 solo en índice. Se conserva clasificación de fixtures sin producto y se verifica que las bases y credenciales locales estén excluidas de las copias Git. No reduce las suites anteriores ni cierra RF/PC pendientes.

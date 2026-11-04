@@ -166,6 +166,12 @@ test(
         "prisma/demo/fuentes/300870001.json",
         "prisma/migrations/202611040001_demo/migration.sql",
         "tests/demo.test.ts",
+        "public/ecclesia.css",
+        "views/partials/header.ejs",
+        "views/criterios.ejs",
+        "views/iglesia-historial.ejs",
+        "tests/ui-cierre-criterios.test.ts",
+        "prisma/migrations/202611040002_cierre_criterios/migration.sql",
       ]) {
         ok(exec(["rm", "--cached", "-f", path]));
         hook(
@@ -281,6 +287,24 @@ test(
       );
       ok(exec(["add", solicitudPath]));
       const pkgPath = join(repo, "package.json");
+      const criterioPath = "src/modules/patrimonio/infrastructure/criterios.ts";
+      const criterio = readFileSync(join(repo, criterioPath), "utf8");
+      assert.ok(criterio.includes("antes.version !== version"));
+      writeFileSync(
+        join(repo, criterioPath),
+        criterio.replace(
+          "antes.version !== version",
+          "antes.version < version",
+        ),
+      );
+      ok(exec(["add", criterioPath]));
+      writeFileSync(join(repo, criterioPath), criterio);
+      hook(
+        "activación sin control de concurrencia solo en índice",
+        false,
+        /dos activaciones simultáneas/,
+      );
+      ok(exec(["add", criterioPath]));
       const demoPath = "prisma/demo/carga.ts";
       const demo = readFileSync(join(repo, demoPath), "utf8");
       assert.match(demo, /length: 120/);

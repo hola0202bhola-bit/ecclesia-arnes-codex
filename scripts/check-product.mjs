@@ -12,6 +12,14 @@ export function checkProductInputs(project, indexedPaths) {
     : sourceFiles(project);
   if (!files.length) return files;
   for (const required of [
+    "public/ecclesia.css",
+    "public/iglesia.svg",
+    "views/partials/header.ejs",
+    "views/partials/footer.ejs",
+    "views/iglesia-historial.ejs",
+    "views/criterios.ejs",
+    "tests/ui-cierre-criterios.test.ts",
+    "prisma/migrations/202611040002_cierre_criterios/migration.sql",
     "package.json",
     "package-lock.json",
     "prisma/schema.prisma",
@@ -124,6 +132,7 @@ export function checkProduct(project) {
     "--moduleResolution",
     "NodeNext",
     ...files,
+    "tests/ui-cierre-criterios.test.ts",
     "tests/iglesias.test.ts",
     "tests/identidad.test.ts",
     "tests/gestion-iglesias.test.ts",
@@ -151,6 +160,7 @@ export function checkProduct(project) {
     "tests",
     "prisma/seed.ts",
     "prisma/demo",
+    "public",
     "scripts",
     "package.json",
     "package-lock.json",
@@ -198,6 +208,7 @@ export function checkProduct(project) {
     ["diezmos.test.ts", 22],
     ["solicitudes.test.ts", 28],
     ["demo.test.ts", 16],
+    ["ui-cierre-criterios.test.ts", 21],
   ]) {
     const result = report.testResults?.find((r) =>
       r.name.replaceAll("\\", "/").endsWith("/tests/" + suite),
