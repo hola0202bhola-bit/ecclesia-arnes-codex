@@ -8,6 +8,7 @@ import {
   writeFileSync,
   mkdirSync,
   rmSync,
+  existsSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
@@ -38,8 +39,13 @@ function fixture(action) {
       recursive: true,
       filter: (p) =>
         !p.includes(".git") &&
-        !/[\\/](node_modules|coverage|dist|evidence)([\\/]|$)/.test(p),
+        !/[\\/](node_modules|coverage|dist|evidence|\.demo)([\\/]|$)/.test(p),
     });
+    assert.equal(
+      existsSync(join(repo, ".demo")),
+      false,
+      "No preparar bases ni credenciales locales en el fixture Git",
+    );
     // Los doce escenarios históricos prueban herramientas/contrato sin producto.
     // El índice de producto completo tiene su propia suite y pipeline real.
     for (const path of [

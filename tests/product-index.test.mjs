@@ -7,6 +7,7 @@ import {
   readFileSync,
   writeFileSync,
   rmSync,
+  existsSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -69,6 +70,7 @@ test(
         assert.match(output, /agenda\.test\.ts/);
         assert.match(output, /diezmos\.test\.ts/);
         assert.match(output, /solicitudes\.test\.ts/);
+        assert.match(output, /demo\.test\.ts/);
         assert.match(output, /PostgreSQL real aislado/);
       }
     }
@@ -76,10 +78,15 @@ test(
       cpSync(source, repo, {
         recursive: true,
         filter: (p) =>
-          !/[\\/](node_modules|coverage|dist|evidence|\.git|\.githooks)([\\/]|$)/.test(
+          !/[\\/](node_modules|coverage|dist|evidence|\.git|\.demo|\.githooks)([\\/]|$)/.test(
             p,
           ),
       });
+      assert.equal(
+        existsSync(join(repo, ".demo")),
+        false,
+        "No preparar bases ni credenciales locales en el fixture Git",
+      );
       ok(exec(["init", "--quiet"]));
       ok(exec(["config", "core.autocrlf", "false"]));
       const install = spawnSync(
@@ -152,6 +159,13 @@ test(
         "views/solicitud-seguimiento.ejs",
         "views/solicitudes-gestion.ejs",
         "views/solicitud-revision.ejs",
+        "prisma/demo/carga.ts",
+        "prisma/demo/ejecutar.ts",
+        "scripts/demo.mjs",
+        "prisma/demo/fuentes/manifest.json",
+        "prisma/demo/fuentes/300870001.json",
+        "prisma/migrations/202611040001_demo/migration.sql",
+        "tests/demo.test.ts",
       ]) {
         ok(exec(["rm", "--cached", "-f", path]));
         hook(
@@ -267,6 +281,32 @@ test(
       );
       ok(exec(["add", solicitudPath]));
       const pkgPath = join(repo, "package.json");
+      const demoPath = "prisma/demo/carga.ts";
+      const demo = readFileSync(join(repo, demoPath), "utf8");
+      assert.match(demo, /length: 120/);
+      writeFileSync(
+        join(repo, demoPath),
+        demo.replace("length: 120", "length: 119"),
+      );
+      ok(
+        spawnSync(
+          process.execPath,
+          [
+            join(source, "node_modules/prettier/bin/prettier.cjs"),
+            "--write",
+            demoPath,
+          ],
+          { cwd: repo, encoding: "utf8" },
+        ),
+      );
+      ok(exec(["add", demoPath]));
+      writeFileSync(join(repo, demoPath), demo);
+      hook(
+        "CT20 pierde relación de patrimonio solo en índice",
+        false,
+        /distribución por iglesia|expected.*length/i,
+      );
+      ok(exec(["add", demoPath]));
       const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
       pkg.scripts.test = 'node -e "process.exit(0)"';
       writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");

@@ -16,6 +16,22 @@ export function checkProductInputs(project, indexedPaths) {
     "package-lock.json",
     "prisma/schema.prisma",
     "prisma/seed.ts",
+    "prisma/demo/carga.ts",
+    "prisma/demo/ejecutar.ts",
+    "scripts/demo.mjs",
+    "prisma/demo/fuentes/manifest.json",
+    ...[
+      "210190001",
+      "211140001",
+      "211190001",
+      "290050001",
+      "290330001",
+      "290430001",
+      "300870001",
+      "301930001",
+    ].map((clave) => `prisma/demo/fuentes/${clave}.json`),
+    "prisma/migrations/202611040001_demo/migration.sql",
+    "tests/demo.test.ts",
     "prisma/fuentes/inegi-localidad.json",
     "tests/iglesias.test.ts",
     "tests/identidad.test.ts",
@@ -117,14 +133,24 @@ export function checkProduct(project) {
     "tests/diezmos.test.ts",
     "tests/solicitudes.test.ts",
     "prisma/seed.ts",
+    "prisma/demo/carga.ts",
+    "prisma/demo/ejecutar.ts",
+    "tests/demo.test.ts",
   ]);
-  run(["node_modules/eslint/bin/eslint.js", "src", "tests", "prisma/seed.ts"]);
+  run([
+    "node_modules/eslint/bin/eslint.js",
+    "src",
+    "tests",
+    "prisma/seed.ts",
+    "prisma/demo",
+  ]);
   run([
     "node_modules/prettier/bin/prettier.cjs",
     "--check",
     "src",
     "tests",
     "prisma/seed.ts",
+    "prisma/demo",
     "scripts",
     "package.json",
     "package-lock.json",
@@ -171,6 +197,7 @@ export function checkProduct(project) {
     ["agenda.test.ts", 29],
     ["diezmos.test.ts", 22],
     ["solicitudes.test.ts", 28],
+    ["demo.test.ts", 16],
   ]) {
     const result = report.testResults?.find((r) =>
       r.name.replaceAll("\\", "/").endsWith("/tests/" + suite),
@@ -299,6 +326,30 @@ export function checkProduct(project) {
       )
     )
       throw new Error("Regresión de solicitudes obligatoria ausente: " + regla);
+  }
+  const demo = report.testResults.find((r) =>
+    r.name.replaceAll("\\", "/").endsWith("/tests/demo.test.ts"),
+  );
+  for (const regla of [
+    "base no vacía",
+    "fallo tardío revierte",
+    "dos cargas concurrentes",
+    "distribución por iglesia",
+    "sin traslapes",
+    "cuatro semanas completas",
+    "doce solicitudes",
+    "usuarios por rol",
+    "repetir conserva",
+    "actualiza las ocho",
+    "RF02 ficha integrada",
+    "RF02 ficha cerrada",
+  ]) {
+    if (
+      !demo.assertionResults.some(
+        (r) => r.status === "passed" && r.fullName.includes(regla),
+      )
+    )
+      throw new Error("Regresión CT20 obligatoria ausente: " + regla);
   }
   const coverage = JSON.parse(
     readFileSync(join(project, "coverage/coverage-summary.json"), "utf8"),

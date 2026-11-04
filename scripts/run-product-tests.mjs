@@ -8,6 +8,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { spawn } from "node:child_process";
 import { once } from "node:events";
 import assert from "node:assert/strict";
+import { smokeDemo } from "./smoke-demo.mjs";
 const requireProject = createRequire(resolve("package.json"));
 const EmbeddedPostgres = requireProject("embedded-postgres").default;
 const pg = requireProject("pg");
@@ -81,6 +82,16 @@ try {
   await run(["node_modules/prisma/build/index.js", "migrate", "deploy"]);
   await run(["node_modules/tsx/dist/cli.mjs", "prisma/seed.ts"]);
   await run(["node_modules/tsx/dist/cli.mjs", "prisma/seed.ts"]);
+  // CT20 tiene otra base, creada en este mismo clúster efímero. Nunca la del usuario.
+  await cluster.createDatabase("ecclesia_demo_test");
+  const productoUrl = env.DATABASE_URL;
+  env.DATABASE_URL = productoUrl.replace(
+    /\/ecclesia_test$/,
+    "/ecclesia_demo_test",
+  );
+  await run(["node_modules/prisma/build/index.js", "migrate", "deploy"]);
+  env.ECCLESIA_DEMO_TEST_URL = env.DATABASE_URL;
+  env.DATABASE_URL = productoUrl;
   mkdirSync("evidence", { recursive: true });
   // Configuración del gate escrita por el arnés; no hereda exclusiones del proyecto.
   writeFileSync(
@@ -546,6 +557,7 @@ try {
       await stopped;
     }
   }
+  const demoSmoke = await smokeDemo(env);
   writeFileSync(
     "evidence/database.json",
     JSON.stringify(
@@ -555,6 +567,8 @@ try {
         ioMethod: rows[0].io_method,
         migrations: "prisma migrate deploy",
         seedRuns: 2,
+        demoDatabaseIsolated: true,
+        demoSmoke,
         isolated: true,
         externalDatabaseUsed: false,
         compiledServerSmoke: {
