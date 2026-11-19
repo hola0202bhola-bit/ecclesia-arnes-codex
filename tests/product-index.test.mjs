@@ -134,6 +134,10 @@ test(
       );
       ok(exec(["add", identidadPath]));
       for (const path of [
+        "tests/deployment.test.ts",
+        "src/composition/deployment.ts",
+        "scripts/render-start.mjs",
+        "render.yaml",
         "tests/gestion-iglesias.test.ts",
         "prisma/fuentes/manifest.json",
         "views/iglesia-formulario.ejs",

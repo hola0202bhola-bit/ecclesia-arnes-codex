@@ -1,3 +1,9 @@
+## 19 de noviembre de 2026 — preparación Render
+
+Validación final ejecutada: salida 0, **102/102 arnés y 445/445 producto**, sin omitidas, 58 fuentes sin infracciones, cobertura de líneas 97.77%. Smoke de tres procesos, sesión/revocación y todos los módulos previos aprobado en PostgreSQL 18.6 aislado. Plantilla contrastada localmente también con el esquema oficial de Render; no acredita despliegue.
+
+`npm run check -- ../proyecto-ecclesia` mantiene las regresiones anteriores y exige plantilla, configuración, suite deployment y guía. Valida API/front/admin y añade smoke de tres procesos compilados contra su propia base efímera, con sesión y revocación compartidas. No usa bases ajenas ni crea recursos Render. Plantilla revisada localmente; despliegue real pendiente. [Guía del producto](../proyecto-ecclesia/docs/despliegue-render.md).
+
 ## Entrega del 4 de noviembre de 2026 — RF05 geográfico
 
 Desde esta carpeta: npm ci y **npm run check -- ../proyecto-ecclesia**. Conserva las 380 pruebas previas del producto y 97 del arnés; añade suite PostgreSQL INEGI, contratos/fuentes/migración/vista y smoke compilado sobre CT20 efímero, sin usar DATABASE_URL ajena. El producto mantiene UI aprobada y Teams excluido. [Flujo, comandos y guion](../proyecto-ecclesia/README.md), [resultados finales](../proyecto-ecclesia/docs/estado-producto.md). Los resultados anteriores que siguen son históricos; RF05 geográfico no significa catálogo nacional completo.

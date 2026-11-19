@@ -9,6 +9,7 @@ import { spawn } from "node:child_process";
 import { once } from "node:events";
 import assert from "node:assert/strict";
 import { smokeDemo } from "./smoke-demo.mjs";
+import { smokeDeployment } from "./smoke-deployment.mjs";
 const requireProject = createRequire(resolve("package.json"));
 const EmbeddedPostgres = requireProject("embedded-postgres").default;
 const pg = requireProject("pg");
@@ -558,6 +559,7 @@ try {
     }
   }
   const demoSmoke = await smokeDemo(env);
+  const deploymentSmoke = await smokeDeployment(env);
   writeFileSync(
     "evidence/database.json",
     JSON.stringify(
@@ -569,6 +571,7 @@ try {
         seedRuns: 2,
         demoDatabaseIsolated: true,
         demoSmoke,
+        deploymentSmoke,
         isolated: true,
         externalDatabaseUsed: false,
         compiledServerSmoke: {

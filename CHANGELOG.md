@@ -1,3 +1,7 @@
+## 19 de noviembre de 2026 — gate Render
+
+Exige archivos/suite de despliegue y mínimos anteriores intactos. Valida blueprint y rechaza secretos, seed automático, topología alterada y auto-despliegue. Cuatro nuevas ausencias se rechazan desde el índice Git; smoke separado compila/arranca tres procesos, verifica salud, límites, sesión y revocación sobre PostgreSQL propio. No acredita despliegue remoto.
+
 ## 4 de noviembre de 2026 — gate RF05 geográfico
 
 Exige suite real de importación (29 casos), undécima migración, vista y originales/manifest; contratos/roles de seis operaciones. Smoke compilado prepara/aplica/repite/revierte el snapshot en CT20 efímero con huellas de módulos preservadas. Cinco rechazos nuevos por ausencia de archivos solo en índice, manteniendo todos los anteriores y 35.5. No se declara RF05 nacional ni aceptación docente.

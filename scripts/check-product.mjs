@@ -3,6 +3,7 @@ import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { sourceFiles } from "./check-architecture.mjs";
+import { checkRender } from "./check-render.mjs";
 export function checkProductInputs(project, indexedPaths) {
   project = resolve(project);
   const files = indexedPaths
@@ -12,6 +13,11 @@ export function checkProductInputs(project, indexedPaths) {
     : sourceFiles(project);
   if (!files.length) return files;
   for (const required of [
+    "src/composition/deployment.ts",
+    "scripts/render-start.mjs",
+    "render.yaml",
+    "docs/despliegue-render.md",
+    "tests/deployment.test.ts",
     "tests/importacion-localidades.test.ts",
     "views/importacion-localidades.ejs",
     "prisma/migrations/202611040003_localidades/migration.sql",
@@ -105,6 +111,7 @@ export function checkProduct(project) {
   project = resolve(project);
   const files = checkProductInputs(project);
   if (!files.length) return { implemented: false };
+  checkRender(project);
   if (!existsSync(join(project, "node_modules/typescript/bin/tsc")))
     throw new Error(
       "Instalar dependencias de producto con npm ci antes del check",
@@ -137,6 +144,7 @@ export function checkProduct(project) {
     "--moduleResolution",
     "NodeNext",
     ...files,
+    "tests/deployment.test.ts",
     "tests/importacion-localidades.test.ts",
     "tests/ui-cierre-criterios.test.ts",
     "tests/iglesias.test.ts",
@@ -205,6 +213,7 @@ export function checkProduct(project) {
   )
     throw new Error("Reporte de pruebas de producto inválido/vacío/omitido");
   for (const [suite, minimum] of [
+    ["deployment.test.ts", 36],
     ["importacion-localidades.test.ts", 29],
     ["iglesias.test.ts", 70],
     ["identidad.test.ts", 30],
