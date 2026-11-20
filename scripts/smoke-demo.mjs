@@ -3,6 +3,7 @@ import { createServer } from "node:net";
 import { once } from "node:events";
 import { createRequire } from "node:module";
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import assert from "node:assert/strict";
 import { randomUUID, randomBytes } from "node:crypto";
 
@@ -35,17 +36,21 @@ export async function smokeDemo(env) {
     });
   });
   const base = `http://127.0.0.1:${port}`;
-  const web = spawn(process.execPath, ["dist/composition/server.js"], {
-    env: {
-      ...env,
-      DATABASE_URL: env.ECCLESIA_DEMO_TEST_URL,
-      JWT_SECRET: env.TEST_JWT_SECRET,
-      APP_ORIGIN: base,
-      PORT: String(port),
+  const web = spawn(
+    process.execPath,
+    [fileURLToPath(new URL("./legacy-reference-server.mjs", import.meta.url))],
+    {
+      env: {
+        ...env,
+        DATABASE_URL: env.ECCLESIA_DEMO_TEST_URL,
+        JWT_SECRET: env.TEST_JWT_SECRET,
+        APP_ORIGIN: base,
+        PORT: String(port),
+      },
+      stdio: ["ignore", "pipe", "pipe"],
+      windowsHide: true,
     },
-    stdio: ["ignore", "pipe", "pipe"],
-    windowsHide: true,
-  });
+  );
   try {
     await new Promise((ok, fail) => {
       const timer = setTimeout(

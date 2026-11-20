@@ -31,7 +31,7 @@ test("RF16–21: rutas de agenda ejecutables coinciden y no amplían permisos", 
         assert.deepEqual(op, actual.paths[path][method]);
         assert.deepEqual(
           op["x-roles"],
-          path.endsWith("/misas") ? ["PUBLICO"] : ["ADMIN_IGLESIA"],
+          path.endsWith("/misas") ? ["AUTENTICADO"] : ["ADMIN_IGLESIA"],
         );
         assert.ok(op["x-pending"].includes("PC-12"));
       }

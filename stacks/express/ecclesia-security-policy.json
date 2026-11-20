@@ -1,11 +1,11 @@
 {
-  "description": "Línea base de seguridad del contrato revisión 01, preservada en revisión 02; permisos ampliados pendientes PC-19. No acredita autorización de servidor.",
+  "description": "Ecclesia 1.1: área pública autenticada; visitante no recibe privilegios administrativos; folio y clave siguen siendo necesarios además de la sesión. La compatibilidad local del arnés no es la política del servidor desplegable.",
   "schemes": {
     "PersonalJWT": {
       "type": "http",
       "scheme": "bearer",
       "bearerFormat": "JWT",
-      "description": "Personal con expiración y ámbito, permisos adicionales PC-19."
+      "description": "Cuenta activa con expiración y ámbito. VISITANTE consulta; el personal conserva sus permisos explícitos."
     },
     "SolicitudClave": {
       "type": "apiKey",
@@ -49,23 +49,39 @@
     },
     "GET /catalogos/estados": {
       "operationId": "catalogos_estados",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "GET /catalogos/municipios": {
       "operationId": "catalogos_municipios",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "GET /catalogos/localidades": {
       "operationId": "catalogos_localidades",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "GET /catalogos/{catalogo}": {
       "operationId": "catalogos_tipos",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "POST /catalogos/{catalogo}": {
       "operationId": "catalogos_alta",
@@ -87,8 +103,12 @@
     },
     "GET /iglesias": {
       "operationId": "iglesias_buscar",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "POST /iglesias": {
       "operationId": "iglesias_alta",
@@ -101,8 +121,12 @@
     },
     "GET /iglesias/{iglesiaId}": {
       "operationId": "iglesias_ficha",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "PATCH /iglesias/{iglesiaId}": {
       "operationId": "iglesias_editar",
@@ -133,18 +157,30 @@
     },
     "GET /ranking-patrimonial": {
       "operationId": "patrimonio_ranking",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "GET /iglesias/por-patrimonio": {
       "operationId": "patrimonio_buscar",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "GET /iglesias/{iglesiaId}/objetos": {
       "operationId": "patrimonio_objetos",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "POST /iglesias/{iglesiaId}/objetos": {
       "operationId": "patrimonio_altaObjeto",
@@ -211,8 +247,12 @@
     },
     "GET /iglesias/{iglesiaId}/servicios": {
       "operationId": "servicios_servicios",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "POST /iglesias/{iglesiaId}/servicios": {
       "operationId": "servicios_altaServicio",
@@ -234,8 +274,12 @@
     },
     "GET /iglesias/{iglesiaId}/platicas": {
       "operationId": "servicios_platicas",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "POST /iglesias/{iglesiaId}/platicas": {
       "operationId": "servicios_altaPlatica",
@@ -293,8 +337,12 @@
     },
     "GET /iglesias/{iglesiaId}/horarios-misa": {
       "operationId": "agenda_horarios",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "POST /iglesias/{iglesiaId}/horarios-misa": {
       "operationId": "agenda_crearHorario",
@@ -406,8 +454,12 @@
     },
     "GET /iglesias/{iglesiaId}/ofertas-espacio": {
       "operationId": "solicitudes_ofertas",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "POST /iglesias/{iglesiaId}/ofertas-espacio": {
       "operationId": "solicitudes_altaOferta",
@@ -429,8 +481,12 @@
     },
     "POST /iglesias/{iglesiaId}/solicitudes": {
       "operationId": "solicitudes_alta",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "GET /iglesias/{iglesiaId}/solicitudes": {
       "operationId": "solicitudes_listarPrivado",
@@ -443,9 +499,10 @@
     },
     "GET /solicitudes/{folio}": {
       "operationId": "solicitudes_seguimiento",
-      "roles": ["SOLICITANTE"],
+      "roles": ["SOLICITANTE_AUTENTICADO"],
       "security": [
         {
+          "PersonalJWT": [],
           "SolicitudClave": []
         }
       ]
@@ -479,27 +536,30 @@
     },
     "POST /solicitudes/{folio}/aceptar": {
       "operationId": "solicitudes_aceptar",
-      "roles": ["SOLICITANTE"],
+      "roles": ["SOLICITANTE_AUTENTICADO"],
       "security": [
         {
+          "PersonalJWT": [],
           "SolicitudClave": []
         }
       ]
     },
     "POST /solicitudes/{folio}/rechazar": {
       "operationId": "solicitudes_rechazar",
-      "roles": ["SOLICITANTE"],
+      "roles": ["SOLICITANTE_AUTENTICADO"],
       "security": [
         {
+          "PersonalJWT": [],
           "SolicitudClave": []
         }
       ]
     },
     "POST /solicitudes/{folio}/cancelar": {
       "operationId": "solicitudes_cancelar",
-      "roles": ["SOLICITANTE"],
+      "roles": ["SOLICITANTE_AUTENTICADO"],
       "security": [
         {
+          "PersonalJWT": [],
           "SolicitudClave": []
         }
       ]
@@ -515,7 +575,7 @@
     },
     "GET /auth/me": {
       "operationId": "identidad_perfil",
-      "roles": ["COORDINACION", "ADMIN_IGLESIA", "TESORERO"],
+      "roles": ["COORDINACION", "ADMIN_IGLESIA", "TESORERO", "VISITANTE"],
       "security": [
         {
           "PersonalJWT": []
@@ -524,7 +584,7 @@
     },
     "POST /auth/logout": {
       "operationId": "identidad_logout",
-      "roles": ["COORDINACION", "ADMIN_IGLESIA", "TESORERO"],
+      "roles": ["COORDINACION", "ADMIN_IGLESIA", "TESORERO", "VISITANTE"],
       "security": [
         {
           "PersonalJWT": []
@@ -533,18 +593,30 @@
     },
     "GET /catalogos/tipos-servicio": {
       "operationId": "servicios_tiposServicio",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "GET /catalogos/tipos-platica": {
       "operationId": "servicios_tiposPlatica",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "GET /iglesias/{iglesiaId}/misas": {
       "operationId": "agendaV1_semanaPublica",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "GET /iglesias/{iglesiaId}/agenda/sacerdotes": {
       "operationId": "agendaV1_listarPadres",
@@ -638,8 +710,12 @@
     },
     "GET /solicitudes/acceso": {
       "operationId": "solicitudes_accesoFormulario",
-      "roles": ["PUBLICO"],
-      "security": []
+      "roles": ["AUTENTICADO"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     },
     "GET /iglesias/{iglesiaId}/ofertas-espacio/gestion": {
       "operationId": "solicitudes_ofertasGestion",
@@ -716,6 +792,29 @@
     "POST /catalogos/importaciones-localidades/{importacionId}/revertir": {
       "operationId": "inegi_revertir",
       "roles": ["COORDINACION"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "POST /auth/registro": {
+      "operationId": "cuentas_registro",
+      "roles": ["PUBLICO"],
+      "security": []
+    },
+    "GET /cuenta/perfil": {
+      "operationId": "cuentas_perfil",
+      "roles": ["COORDINACION", "ADMIN_IGLESIA", "TESORERO", "VISITANTE"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
+    },
+    "PUT /cuenta/perfil": {
+      "operationId": "cuentas_perfil_guardar",
+      "roles": ["COORDINACION", "ADMIN_IGLESIA", "TESORERO", "VISITANTE"],
       "security": [
         {
           "PersonalJWT": []

@@ -34,9 +34,11 @@ test("RF25–31 contrato real coincide, roles mínimos y credencial separada de 
       assert.deepEqual(op, actual.paths[p][m]);
       if (op["x-roles"].includes("ADMIN_IGLESIA"))
         assert.deepEqual(op.security, [{ PersonalJWT: [] }]);
-      else if (op["x-roles"].includes("SOLICITANTE"))
-        assert.deepEqual(op.security, [{ SolicitudClave: [] }]);
-      else assert.deepEqual(op.security, []);
+      else if (op["x-roles"].includes("SOLICITANTE_AUTENTICADO"))
+        assert.deepEqual(op.security, [
+          { PersonalJWT: [], SolicitudClave: [] },
+        ]);
+      else assert.deepEqual(op.security, [{ PersonalJWT: [] }]);
       assert.equal(op["x-roles"].includes("COORDINACION"), false);
       assert.equal(op["x-roles"].includes("TESORERO"), false);
     }

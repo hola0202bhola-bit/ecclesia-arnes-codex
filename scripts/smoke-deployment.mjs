@@ -26,6 +26,7 @@ export async function smokeDeployment(env) {
     Object.entries(ports).map(([k, p]) => [k, `http://127.0.0.1:${p}`]),
   );
   const children = [];
+  let visitorId;
   const client = new Client({ connectionString: env.DATABASE_URL });
   await client.connect();
   const id = randomUUID(),
@@ -36,7 +37,7 @@ export async function smokeDeployment(env) {
       'INSERT INTO "Usuario" (id,identificador,"passwordHash",rol) VALUES ($1,$2,$3,$4)',
       [id, identificador, await hash(password, 12), "COORDINACION"],
     );
-    for (const surface of ["api", "front", "admin"]) {
+    const start = async (surface) => {
       const child = spawn(
         process.execPath,
         ["scripts/render-start.mjs", surface],
@@ -80,15 +81,19 @@ export async function smokeDeployment(env) {
         });
       });
       assert.equal((await fetch(bases[surface] + "/health/ready")).status, 200);
-    }
+    };
+    for (const surface of ["api", "front", "admin"]) await start(surface);
     assert.equal((await fetch(bases.api + "/iglesias")).status, 404);
     assert.equal((await fetch(bases.front + "/api/v1/iglesias")).status, 404);
     assert.equal((await fetch(bases.admin + "/api/v1/iglesias")).status, 404);
     assert.equal(
       (await fetch(bases.api + "/api/v1/iglesias?estadoClave=21")).status,
-      200,
+      401,
     );
-    assert.equal((await fetch(bases.front + "/iglesias")).status, 200);
+    const mustLogin = await fetch(bases.front + "/iglesias", {
+      redirect: "manual",
+    });
+    assert.equal(mustLogin.headers.get("location"), "/cuenta/login");
     const redirect = await fetch(
       bases.front + "/personal/login?clave=privada",
       { redirect: "manual" },
@@ -114,6 +119,22 @@ export async function smokeDeployment(env) {
       200,
     );
     const token = cookie.slice("ecclesia_session=".length);
+    assert.equal(
+      (
+        await fetch(bases.api + "/api/v1/iglesias?estadoClave=21", {
+          headers: { Authorization: "Bearer " + token },
+        })
+      ).status,
+      200,
+    );
+    assert.equal(
+      (
+        await fetch(bases.front + "/iglesias", {
+          headers: { Authorization: "Bearer " + token },
+        })
+      ).status,
+      200,
+    );
     const me = await fetch(bases.api + "/api/v1/auth/me", {
       headers: { Authorization: "Bearer " + token },
     });
@@ -142,12 +163,101 @@ export async function smokeDeployment(env) {
       ).status,
       401,
     );
+    const visitorName = "visitante." + randomBytes(6).toString("hex");
+    const visitorPassword = randomBytes(24).toString("hex");
+    const register = await fetch(bases.api + "/api/v1/auth/registro", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        identificador: visitorName,
+        password: visitorPassword,
+      }),
+    });
+    assert.equal(register.status, 201);
+    const visitor = await register.json();
+    assert.equal(visitor.rol, "VISITANTE");
+    visitorId = visitor.id;
+    const entry = await fetch(bases.front + "/cuenta/login");
+    const entryHtml = await entry.text();
+    const nonce = entryHtml.match(/name="_csrf" value="([^"]+)"/)[1];
+    const entryCookie = entry.headers.get("set-cookie").split(";")[0];
+    const entered = await fetch(bases.front + "/cuenta/login", {
+      method: "POST",
+      redirect: "manual",
+      headers: {
+        Origin: bases.front,
+        Cookie: entryCookie,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        identificador: visitorName,
+        password: visitorPassword,
+        _csrf: nonce,
+      }),
+    });
+    assert.equal(entered.status, 303);
+    const visitorCookie = entered.headers.get("set-cookie").split(";")[0];
+    const profile = await fetch(bases.front + "/cuenta/perfil", {
+      headers: { Cookie: visitorCookie },
+    });
+    assert.equal(profile.status, 200);
+    const profileHtml = await profile.text();
+    const visitorCsrf = profileHtml.match(/name="_csrf" value="([^"]+)"/)[1];
+    const edited = await fetch(bases.front + "/cuenta/perfil", {
+      method: "POST",
+      redirect: "manual",
+      headers: {
+        Origin: bases.front,
+        Cookie: visitorCookie,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        _csrf: visitorCsrf,
+        version: "0",
+        nombreVisible: "Visitante del smoke",
+        presentacion: "Perfil sintético persistido",
+        avatar: "rama",
+      }),
+    });
+    assert.equal(edited.status, 303);
+    assert.equal(
+      (
+        await fetch(bases.admin + "/personal", {
+          headers: { Cookie: visitorCookie },
+        })
+      ).status,
+      403,
+    );
+    assert.equal(
+      (
+        await fetch(bases.admin + "/cuenta/perfil", {
+          headers: { Cookie: visitorCookie },
+        })
+      ).status,
+      403,
+    );
+    const front = children.splice(1, 1)[0];
+    const stopped = once(front, "exit");
+    front.kill();
+    await stopped;
+    await start("front");
+    const restored = await fetch(bases.front + "/cuenta/perfil", {
+      headers: { Cookie: visitorCookie },
+    });
+    assert.equal(restored.status, 200);
+    assert.match(await restored.text(), /Visitante del smoke/);
+    console.log(
+      "Smoke cuentas 1.1: registro VISITANTE, login front, perfil propio, admin 403 y reinicio persistente aprobados.",
+    );
     return {
       processes: 3,
       wildcardBind: true,
       readiness: true,
       routeIsolation: true,
       sessionAndRevocationAcrossProcesses: true,
+      visitorRegistrationAndProfile: true,
+      visitorDeniedAdmin: true,
+      profileAndSessionSurviveFrontRestart: true,
       remoteDeployment: false,
     };
   } finally {
@@ -159,6 +269,8 @@ export async function smokeDeployment(env) {
       }
     }
     await client.query('DELETE FROM "Usuario" WHERE id=$1', [id]);
+    if (visitorId)
+      await client.query('DELETE FROM "Usuario" WHERE id=$1', [visitorId]);
     await client.end();
   }
 }

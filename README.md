@@ -1,3 +1,9 @@
+## Ecclesia 1.1 — cuentas, rama de trabajo
+
+Usar `feat/ecclesia-1-1-cuentas` en ambos repositorios. Conserva las suites previas y exige registro VISITANTE, perfil propio, CSRF, límite persistente, migración aditiva y login obligatorio. El smoke de tres procesos comprueba registro, perfil, admin 403 y persistencia tras reinicio. El adaptador histórico de módulos se limita a pruebas PostgreSQL loopback y no es el servidor del producto. No merge ni despliegue en esta etapa. [Guía](../proyecto-ecclesia/docs/cuentas-1-1.md).
+
+Gate integral ejecutado con salida 0: **106/106 arnés y 491/491 producto**, sin omitidas; 60 fuentes sin infracciones, cobertura de líneas 97.58%, PostgreSQL 18.6 real y smokes aprobados. Tras el cotejo final del FK de perfil se repitió el producto: 491/491 y tres procesos/reinicio en verde. [Evidencia precisa](../proyecto-ecclesia/docs/estado-producto.md).
+
 ## 19 de noviembre de 2026 — preparación Render
 
 Validación final ejecutada: salida 0, **102/102 arnés y 445/445 producto**, sin omitidas, 58 fuentes sin infracciones, cobertura de líneas 97.77%. Smoke de tres procesos, sesión/revocación y todos los módulos previos aprobado en PostgreSQL 18.6 aislado. Plantilla contrastada localmente también con el esquema oficial de Render; no acredita despliegue.

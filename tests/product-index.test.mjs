@@ -19,7 +19,7 @@ const source =
   fileURLToPath(new URL("../../proyecto-ecclesia", import.meta.url));
 test(
   "H02/H03 índice de producto: positivo y rechazos preparados sin usar working tree",
-  { timeout: 1800000 },
+  { timeout: 2400000 },
   () => {
     const root = mkdtempSync(join(tmpdir(), "ecclesia-product-index-"));
     const repo = join(root, "project");
@@ -134,6 +134,10 @@ test(
       );
       ok(exec(["add", identidadPath]));
       for (const path of [
+        "tests/cuentas.test.ts",
+        "views/cuenta-perfil.ejs",
+        "views/cuenta-acceso.ejs",
+        "prisma/migrations/202611190001_cuentas_visitantes/migration.sql",
         "tests/deployment.test.ts",
         "src/composition/deployment.ts",
         "scripts/render-start.mjs",
@@ -340,6 +344,21 @@ test(
         /distribución por iglesia|expected.*length/i,
       );
       ok(exec(["add", demoPath]));
+      const cuentasPath = "src/modules/identidad/application/servicio.ts";
+      const cuentas = readFileSync(join(repo, cuentasPath), "utf8");
+      assert.match(cuentas, /rol: "VISITANTE"/);
+      writeFileSync(
+        join(repo, cuentasPath),
+        cuentas.replace('rol: "VISITANTE"', 'rol: "COORDINACION"'),
+      );
+      ok(exec(["add", cuentasPath]));
+      writeFileSync(join(repo, cuentasPath), cuentas);
+      hook(
+        "autorregistro elevado a Coordinación solo en índice",
+        false,
+        /autorregistro siempre VISITANTE|expected.*VISITANTE/i,
+      );
+      ok(exec(["add", cuentasPath]));
       const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
       pkg.scripts.test = 'node -e "process.exit(0)"';
       writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");

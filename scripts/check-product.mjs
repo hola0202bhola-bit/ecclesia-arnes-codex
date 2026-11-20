@@ -13,6 +13,11 @@ export function checkProductInputs(project, indexedPaths) {
     : sourceFiles(project);
   if (!files.length) return files;
   for (const required of [
+    "tests/cuentas.test.ts",
+    "views/cuenta-acceso.ejs",
+    "views/cuenta-perfil.ejs",
+    "prisma/migrations/202611190001_cuentas_visitantes/migration.sql",
+    "src/modules/identidad/presentation/cuenta.ts",
     "src/composition/deployment.ts",
     "scripts/render-start.mjs",
     "render.yaml",
@@ -144,6 +149,7 @@ export function checkProduct(project) {
     "--moduleResolution",
     "NodeNext",
     ...files,
+    "tests/cuentas.test.ts",
     "tests/deployment.test.ts",
     "tests/importacion-localidades.test.ts",
     "tests/ui-cierre-criterios.test.ts",
@@ -213,6 +219,7 @@ export function checkProduct(project) {
   )
     throw new Error("Reporte de pruebas de producto inválido/vacío/omitido");
   for (const [suite, minimum] of [
+    ["cuentas.test.ts", 46],
     ["deployment.test.ts", 36],
     ["importacion-localidades.test.ts", 29],
     ["iglesias.test.ts", 70],

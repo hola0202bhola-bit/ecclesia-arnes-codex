@@ -44,7 +44,7 @@ test("RF07–10/12: operaciones ejecutables conservan política explícita y DTO
       assert.deepEqual(actual.paths[path][method], op);
       assert.deepEqual(
         op["x-roles"],
-        method === "get" ? ["PUBLICO"] : ["ADMIN_IGLESIA"],
+        method === "get" ? ["AUTENTICADO"] : ["ADMIN_IGLESIA"],
       );
     }
   for (const name of [

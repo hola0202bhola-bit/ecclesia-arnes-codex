@@ -64,8 +64,8 @@ test("RF05: lectura de catálogos exige procedencia y no simula versión mutable
     "/catalogos/{catalogo}",
   ]) {
     const op = api.paths[path].get;
-    assert.deepEqual(op.security, []);
-    assert.deepEqual(op["x-roles"], ["PUBLICO"]);
+    assert.deepEqual(op.security, [{ PersonalJWT: [] }]);
+    assert.deepEqual(op["x-roles"], ["AUTENTICADO"]);
     assert.equal(op["x-implementation"], "IMPLEMENTADO");
   }
   assert.equal(
@@ -173,10 +173,10 @@ for (const [resource, sample] of Object.entries(creates)) {
     );
   });
 }
-test("H06: consulta anónima declara resumen público de padre y ejemplo válido", () => {
+test("H06: consulta autenticada declara resumen público de padre y ejemplo válido", () => {
   const operation = api.paths["/iglesias/{iglesiaId}/horarios-misa"].get;
-  assert.deepEqual(operation.security, []);
-  assert.deepEqual(operation["x-roles"], ["PUBLICO"]);
+  assert.deepEqual(operation.security, [{ PersonalJWT: [] }]);
+  assert.deepEqual(operation["x-roles"], ["AUTENTICADO"]);
   const media = operation.responses[200].content["application/json"];
   assert.equal(
     ajv.validate({ ...media.schema, components: { schemas } }, media.example),
