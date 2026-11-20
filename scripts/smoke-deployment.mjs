@@ -25,6 +25,34 @@ export async function smokeDeployment(env) {
   const bases = Object.fromEntries(
     Object.entries(ports).map(([k, p]) => [k, `http://127.0.0.1:${p}`]),
   );
+  async function checkPersonalLink(html) {
+    const link = html.match(/class="nav-personal" href="([^"]+)"/);
+    assert.equal(link?.[1], bases.admin + "/personal/login");
+    // fetch no hereda cookies: reproduce un salto al host admin sin su sesión.
+    const destination = await fetch(link[1], { redirect: "manual" });
+    assert.equal(destination.status, 200);
+    assert.match(await destination.text(), /action="\/personal\/login"/);
+    assert.equal(destination.headers.get("set-cookie"), null);
+  }
+  async function enterFront(identificador, password) {
+    const entry = await fetch(bases.front + "/cuenta/login");
+    const html = await entry.text();
+    const nonce = html.match(/name="_csrf" value="([^"]+)"/)[1];
+    const entered = await fetch(bases.front + "/cuenta/login", {
+      method: "POST",
+      redirect: "manual",
+      headers: {
+        Origin: bases.front,
+        Cookie: entry.headers.get("set-cookie").split(";")[0],
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({ identificador, password, _csrf: nonce }),
+    });
+    assert.equal(entered.status, 303);
+    const cookie = entered.headers.get("set-cookie");
+    assert.doesNotMatch(cookie, /Domain=/i);
+    return cookie.split(";")[0];
+  }
   const children = [];
   let visitorId;
   const client = new Client({ connectionString: env.DATABASE_URL });
@@ -94,6 +122,9 @@ export async function smokeDeployment(env) {
       redirect: "manual",
     });
     assert.equal(mustLogin.headers.get("location"), "/cuenta/login");
+    await checkPersonalLink(
+      await (await fetch(bases.front + "/cuenta/login")).text(),
+    );
     const redirect = await fetch(
       bases.front + "/personal/login?clave=privada",
       { redirect: "manual" },
@@ -119,6 +150,13 @@ export async function smokeDeployment(env) {
       200,
     );
     const token = cookie.slice("ecclesia_session=".length);
+    // Cookie de personal válida en el front: no acredita una sesión del host admin.
+    const staffFrontCookie = await enterFront(identificador, password);
+    const staffFront = await fetch(bases.front + "/iglesias", {
+      headers: { Cookie: staffFrontCookie },
+    });
+    assert.equal(staffFront.status, 200);
+    await checkPersonalLink(await staffFront.text());
     assert.equal(
       (
         await fetch(bases.api + "/api/v1/iglesias?estadoClave=21", {
@@ -177,31 +215,35 @@ export async function smokeDeployment(env) {
     const visitor = await register.json();
     assert.equal(visitor.rol, "VISITANTE");
     visitorId = visitor.id;
-    const entry = await fetch(bases.front + "/cuenta/login");
-    const entryHtml = await entry.text();
-    const nonce = entryHtml.match(/name="_csrf" value="([^"]+)"/)[1];
-    const entryCookie = entry.headers.get("set-cookie").split(";")[0];
-    const entered = await fetch(bases.front + "/cuenta/login", {
-      method: "POST",
-      redirect: "manual",
-      headers: {
-        Origin: bases.front,
-        Cookie: entryCookie,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        identificador: visitorName,
-        password: visitorPassword,
-        _csrf: nonce,
-      }),
-    });
-    assert.equal(entered.status, 303);
-    const visitorCookie = entered.headers.get("set-cookie").split(";")[0];
+    const visitorCookie = await enterFront(visitorName, visitorPassword);
     const profile = await fetch(bases.front + "/cuenta/perfil", {
       headers: { Cookie: visitorCookie },
     });
     assert.equal(profile.status, 200);
     const profileHtml = await profile.text();
+    await checkPersonalLink(profileHtml);
+    assert.equal((await fetch(bases.admin + "/personal")).status, 401);
+    const sessionsBefore = await client.query(
+      'SELECT count(*)::int AS total FROM "Sesion"',
+    );
+    const visitorAdminLogin = await fetch(bases.admin + "/personal/login", {
+      method: "POST",
+      redirect: "manual",
+      headers: {
+        Origin: bases.admin,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        identificador: visitorName,
+        password: visitorPassword,
+      }),
+    });
+    assert.equal(visitorAdminLogin.status, 401);
+    assert.equal(visitorAdminLogin.headers.get("set-cookie"), null);
+    const sessionsAfter = await client.query(
+      'SELECT count(*)::int AS total FROM "Sesion"',
+    );
+    assert.equal(sessionsAfter.rows[0].total, sessionsBefore.rows[0].total);
     const visitorCsrf = profileHtml.match(/name="_csrf" value="([^"]+)"/)[1];
     const edited = await fetch(bases.front + "/cuenta/perfil", {
       method: "POST",
@@ -245,9 +287,11 @@ export async function smokeDeployment(env) {
       headers: { Cookie: visitorCookie },
     });
     assert.equal(restored.status, 200);
-    assert.match(await restored.text(), /Visitante del smoke/);
+    const restoredHtml = await restored.text();
+    assert.match(restoredHtml, /Visitante del smoke/);
+    await checkPersonalLink(restoredHtml);
     console.log(
-      "Smoke cuentas 1.1: registro VISITANTE, login front, perfil propio, admin 403 y reinicio persistente aprobados.",
+      "Smoke cuentas 1.1: registro VISITANTE, login front, perfil propio, navegación al login admin sin sesión compartida, admin 403 y reinicio persistente aprobados.",
     );
     return {
       processes: 3,
@@ -257,6 +301,8 @@ export async function smokeDeployment(env) {
       sessionAndRevocationAcrossProcesses: true,
       visitorRegistrationAndProfile: true,
       visitorDeniedAdmin: true,
+      frontPersonalLinkToAdminLogin: true,
+      visitorAdminLoginCreatesNoSession: true,
       profileAndSessionSurviveFrontRestart: true,
       remoteDeployment: false,
     };
