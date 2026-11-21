@@ -1,3 +1,11 @@
+## 20 de noviembre de 2026 — regresión P3 front/admin
+
+Se amplía el smoke compilado de tres procesos: enlace real del front al login admin sin cookie administrativa, tanto anónimo como personal/visitante autenticados y tras reiniciar el front. Comprueba formulario 200 sin emitir sesión, login administrativo de VISITANTE rechazado sin sesión nueva y 401/403 del panel conservados. Mantiene todos los controles y límites existentes; no altera el ejecutor del gate ni sus tiempos de espera.
+
+## Ecclesia 1.1 — pruebas de cuentas y acceso
+
+Contrato con consultas autenticadas, registro sin rol/iglesia y perfil propio versionado. Suite nueva, cuatro ausencias nuevas en índice Git y rechazo semántico del autorregistro elevado a Coordinación. Se conservan las regresiones anteriores; el escenario integral admite 40 minutos por la suite añadida, sin omitir checks. Smoke de tres procesos/reinicio con login obligatorio; referencia histórica de módulos explícita y local.
+
 ## 19 de noviembre de 2026 — gate Render
 
 Exige archivos/suite de despliegue y mínimos anteriores intactos. Valida blueprint y rechaza secretos, seed automático, topología alterada y auto-despliegue. Cuatro nuevas ausencias se rechazan desde el índice Git; smoke separado compila/arranca tres procesos, verifica salud, límites, sesión y revocación sobre PostgreSQL propio. No acredita despliegue remoto.

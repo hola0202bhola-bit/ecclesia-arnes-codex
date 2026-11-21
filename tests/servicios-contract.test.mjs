@@ -44,7 +44,7 @@ test("RF13–15: contrato ejecutable coincide con subconjunto, público consulta
       assert.deepEqual(op, actual.paths[path][method]);
       assert.deepEqual(
         op["x-roles"],
-        method === "get" ? ["PUBLICO"] : ["ADMIN_IGLESIA"],
+        method === "get" ? ["AUTENTICADO"] : ["ADMIN_IGLESIA"],
       );
       assert.ok(op["x-pending"].includes("PC-09"));
     }

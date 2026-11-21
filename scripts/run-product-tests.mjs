@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { createServer } from "node:net";
 import { randomBytes, randomUUID } from "node:crypto";
+import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 import { once } from "node:events";
 import assert from "node:assert/strict";
@@ -50,6 +51,8 @@ const env = {
   DATABASE_URL: `postgresql://ecclesia_test:${password}@127.0.0.1:${port}/ecclesia_test`,
   TEST_JWT_SECRET: randomBytes(48).toString("hex"),
   NO_COLOR: "1",
+  NODE_ENV: "test",
+  ECCLESIA_TEST_REFERENCE: "1",
 };
 delete env.NODE_TEST_CONTEXT;
 async function run(args) {
@@ -117,16 +120,20 @@ try {
       server.close(() => resolve(address.port));
     });
   });
-  const web = spawn(process.execPath, ["dist/composition/server.js"], {
-    env: {
-      ...env,
-      JWT_SECRET: env.TEST_JWT_SECRET,
-      PORT: String(httpPort),
-      APP_ORIGIN: "http://127.0.0.1:" + httpPort,
+  const web = spawn(
+    process.execPath,
+    [fileURLToPath(new URL("./legacy-reference-server.mjs", import.meta.url))],
+    {
+      env: {
+        ...env,
+        JWT_SECRET: env.TEST_JWT_SECRET,
+        PORT: String(httpPort),
+        APP_ORIGIN: "http://127.0.0.1:" + httpPort,
+      },
+      stdio: ["ignore", "pipe", "pipe"],
+      windowsHide: true,
     },
-    stdio: ["ignore", "pipe", "pipe"],
-    windowsHide: true,
-  });
+  );
   try {
     await new Promise((resolve, reject) => {
       const timer = setTimeout(
@@ -575,6 +582,7 @@ try {
         isolated: true,
         externalDatabaseUsed: false,
         compiledServerSmoke: {
+          historicalReferenceAdapter: true,
           api: 200,
           ejs: 200,
           anonymousWrite: 401,
