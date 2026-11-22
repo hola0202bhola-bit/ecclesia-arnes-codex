@@ -1,3 +1,7 @@
+## 22/11/2026 — revisión PC-10 de los PR #2
+
+Se conserva el bloqueo global contando vínculos retirados para proteger referencias históricas ajenas. El producto añade una regresión; el arnés mantiene sus 110 casos, ejecutores, exclusiones y umbrales. [Decisión revisable PC-10](../ecclesia-sistema/docs/revision-pc10-pr2-20261122.md). Estado comprobado: PR #2 de ambos repositorios abiertos en borrador hacia main; las notas anteriores sin publicación son históricas. Gate conjunto aprobado: 521/521 producto, 110/110 arnés y 67 escenarios del índice, sin omisiones; 49.65 minutos. Los 332 archivos congelados permanecieron iguales. Resultados completos en la guía y evidencias PC-10 del producto; después solo se actualizó documentación/evidencia. Sin merges ni despliegues.
+
 ## 22/11/2026 — indicaciones recientes del profesor
 
 Desvinculación propia con motivo/versión y referencia funeraria pública opcional expresamente autorizada. Matriz agrega solo DELETE propio; nuevas regresiones de contratos, migraciones ausentes y smoke compilado de retirada/referencia pública, conservando cotización privada. No se elimina ninguna prueba ni se reducen controles. Resultados reales en la guía del producto hermano docs/indicaciones-profesor-20261122.md. Sin commits, publicación o despliegue.
