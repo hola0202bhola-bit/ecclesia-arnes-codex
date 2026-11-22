@@ -17,6 +17,8 @@ export function checkProductInputs(project, indexedPaths) {
     "views/cuenta-acceso.ejs",
     "views/cuenta-perfil.ejs",
     "prisma/migrations/202611190001_cuentas_visitantes/migration.sql",
+    "prisma/migrations/202611210001_ficha_escolar/migration.sql",
+    "prisma/migrations/202611220001_indicaciones_profesor/migration.sql",
     "src/modules/identidad/presentation/cuenta.ts",
     "src/composition/deployment.ts",
     "scripts/render-start.mjs",

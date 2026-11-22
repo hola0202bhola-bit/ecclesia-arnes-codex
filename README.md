@@ -1,3 +1,15 @@
+## 22/11/2026 — indicaciones recientes del profesor
+
+Desvinculación propia con motivo/versión y referencia funeraria pública opcional expresamente autorizada. Matriz agrega solo DELETE propio; nuevas regresiones de contratos, migraciones ausentes y smoke compilado de retirada/referencia pública, conservando cotización privada. No se elimina ninguna prueba ni se reducen controles. Resultados reales en la guía del producto hermano docs/indicaciones-profesor-20261122.md. Sin commits, publicación o despliegue.
+
+## 22/11/2026 — corrección R-01 de contratos
+
+Dos pruebas nuevas en ficha-escolar-contract.test.mjs exigen restricciones verificables de fotoUrl/descripcion en los seis esquemas de ambos contratos, negativos HTTP/userinfo/fragmento/IP/local/blancos y positivos HTTPS/null. Se conservan todas las pruebas anteriores y el gate completo. El resultado ejecutado consta en la guía y estado del producto hermano. No se modifica Zod ni se publica.
+
+## Ajustes escolares del 21/11/2026
+
+Con las carpetas actuales ejecutar `npm run check -- ../ecclesia-sistema`. Rama `feat/ajustes-escolares-20261121`: smoke actualizado al formulario autenticado y aclaraciones funerarias; se conservan todas las pruebas, umbrales y regresiones de índice. [Alcance y resultados del producto](../ecclesia-sistema/docs/ajustes-demostracion-escolar.md). Sin cambios a main ni servicios remotos.
+
 ## 20 de noviembre de 2026 — P3 y validación conjunta
 
 El enlace **Área del personal** del front siempre lleva a `ADMIN_ORIGIN/personal/login`, aunque haya cookie local. En admin se conserva el acceso interno al panel. Dos regresiones fallaron en el href al restaurar temporalmente el código anterior; con la corrección pasaron **82/82** casos de cuentas/despliegue. Se amplían aserciones existentes y smoke, sin eliminar casos ni cambiar permisos. Visitante sigue recibiendo 403 en admin y su login administrativo no crea sesión ni cookie.

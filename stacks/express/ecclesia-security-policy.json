@@ -820,6 +820,15 @@
           "PersonalJWT": []
         }
       ]
+    },
+    "DELETE /iglesias/{iglesiaId}/agenda/asignaciones/{id}": {
+      "operationId": "agendaV1_desvincularPadre",
+      "roles": ["ADMIN_IGLESIA"],
+      "security": [
+        {
+          "PersonalJWT": []
+        }
+      ]
     }
   }
 }

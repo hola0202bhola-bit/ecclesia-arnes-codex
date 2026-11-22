@@ -138,6 +138,8 @@ test(
         "views/cuenta-perfil.ejs",
         "views/cuenta-acceso.ejs",
         "prisma/migrations/202611190001_cuentas_visitantes/migration.sql",
+        "prisma/migrations/202611210001_ficha_escolar/migration.sql",
+        "prisma/migrations/202611220001_indicaciones_profesor/migration.sql",
         "tests/deployment.test.ts",
         "src/composition/deployment.ts",
         "scripts/render-start.mjs",
