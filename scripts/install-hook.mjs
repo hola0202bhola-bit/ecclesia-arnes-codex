@@ -48,10 +48,13 @@ const rel = relative(repo, home).replaceAll("\\", "/");
 const quote = (text) => "'" + text.replaceAll("'", "'\"'\"'") + "'";
 const bootstrap = `
 import {readdirSync, readFileSync, lstatSync} from 'node:fs';
-import {join} from 'node:path';
+import {join, resolve} from 'node:path';
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
-const [repo, home] = process.argv.slice(1);
+// Git invokes pre-commit in the worktree root. Resolve with native Node paths:
+// MSYS may mount TEMP as /tmp, where shell-relative parent traversal differs.
+const repo = process.cwd();
+const home = resolve(repo, process.argv[1]);
 ${fingerprint.toString()}
 const expected = ${JSON.stringify(fingerprint(home))};
 if (JSON.stringify(fingerprint(home)) !== JSON.stringify(expected)) throw new Error('Arnés distinto del revisado al instalar hook. Revisar cambios, ejecutar check y reinstalar explícitamente.');
@@ -60,11 +63,11 @@ if (result.error) throw result.error;
 process.exit(result.status ?? 1);
 `;
 const hook =
-  '#!/bin/sh\n# Ecclesia index hook v0.2\nset -eu\nrepo=$(git rev-parse --show-toplevel)\nharness=$(cd "$repo" && cd ' +
-  quote(rel) +
-  " && pwd)\nnode --input-type=module -e " +
+  "#!/bin/sh\n# Ecclesia index hook v0.2\nset -eu\nnode --input-type=module -e " +
   quote(bootstrap) +
-  ' -- "$repo" "$harness"\n';
+  " -- " +
+  quote(rel) +
+  "\n";
 const dest = resolve(repo, ".githooks/pre-commit");
 if (
   existsSync(dest) &&

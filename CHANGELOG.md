@@ -119,3 +119,7 @@ Se añaden regresiones positivas/negativas y muestras contractuales de H06/H07/H
 El runner limpia el contexto heredado de node:test para ejecutar realmente las pruebas internas del hook durante regresiones. Se verifica el conteo ejecutado y se rechazan rutas que colisionan al materializarlas y enlaces en el índice. Esta mejora surgió de revisar salidas reales, no de un fallo atribuido al alumno.
 
 RF25–31 validado: 93/93 arnés, 343/343 producto, PostgreSQL real y 36 escenarios de índice. Fixture temporal con formato válido, preflight exclusivamente del índice y detención al primer fallo sin omitir casos válidos. Sin aceptación docente.
+
+## 23/11/2026 — rutas nativas del hook
+
+Resolver repo/home en Node evita el montaje /tmp de MSYS. Se añade una regresión real con TEMP separado y espacios, contrastada contra el instalador anterior. Se conservan fingerprint, snapshot del índice, controles, umbrales y tests existentes. La ejecución íntegra se registra por separado; [diagnóstico y límites](docs/git-temporal-windows-20261123.md).
