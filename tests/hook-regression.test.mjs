@@ -14,17 +14,22 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
+import { runFixtureGit } from "../scripts/git-fixture.mjs";
 const home = fileURLToPath(new URL("..", import.meta.url));
 const source =
   process.env.ECCLESIA_PROJECT ??
   fileURLToPath(new URL("../../proyecto-ecclesia", import.meta.url));
 function exec(cwd, cmd, args, env = process.env) {
-  const r = spawnSync(cmd, args, {
+  const options = {
     cwd,
     encoding: "utf8",
     maxBuffer: 32 * 1024 * 1024,
     env,
-  });
+  };
+  const r =
+    cmd === "git"
+      ? runFixtureGit(args, options)
+      : spawnSync(cmd, args, options);
   if (r.error) throw r.error;
   return r;
 }

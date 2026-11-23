@@ -123,3 +123,5 @@ RF25–31 validado: 93/93 arnés, 343/343 producto, PostgreSQL real y 36 escenar
 ## 23/11/2026 — rutas nativas del hook
 
 Resolver repo/home en Node evita el montaje /tmp de MSYS. Se añade una regresión real con TEMP separado y espacios, contrastada contra el instalador anterior. Se conservan fingerprint, snapshot del índice, controles, umbrales y tests existentes. La ejecución íntegra se registra por separado; [diagnóstico y límites](docs/git-temporal-windows-20261123.md).
+
+Seis regresiones adicionales delimitan recuperación explícita y acotada solo de add en fixtures ante Permission denied de objetos sueltos Windows; no repite hooks ni controles fallidos. La primera pasada íntegra falló 110/111 por preparación Git y se conserva separada.
