@@ -1,3 +1,19 @@
+## 22/11/2026 — revisión PC-10 de los PR #2
+
+Se conserva el bloqueo global contando vínculos retirados para proteger referencias históricas ajenas. El producto añade una regresión; el arnés mantiene sus 110 casos, ejecutores, exclusiones y umbrales. [Decisión revisable PC-10](../ecclesia-sistema/docs/revision-pc10-pr2-20261122.md). Estado comprobado: PR #2 de ambos repositorios abiertos en borrador hacia main; las notas anteriores sin publicación son históricas. Gate conjunto aprobado: 521/521 producto, 110/110 arnés y 67 escenarios del índice, sin omisiones; 49.65 minutos. Los 332 archivos congelados permanecieron iguales. Resultados completos en la guía y evidencias PC-10 del producto; después solo se actualizó documentación/evidencia. Sin merges ni despliegues.
+
+## 22/11/2026 — indicaciones recientes del profesor
+
+Desvinculación propia con motivo/versión y referencia funeraria pública opcional expresamente autorizada. Matriz agrega solo DELETE propio; nuevas regresiones de contratos, migraciones ausentes y smoke compilado de retirada/referencia pública, conservando cotización privada. No se elimina ninguna prueba ni se reducen controles. Resultados reales en la guía del producto hermano docs/indicaciones-profesor-20261122.md. Sin commits, publicación o despliegue.
+
+## 22/11/2026 — regresiones R-01 de compatibilidad
+
+Se agregan dos pruebas Ajv para los doce esquemas de propiedades de ficha escolar, incluyendo negativos y conservación de HTTPS válida, null y opcionalidad. El producto añade correspondencia con Zod. Sin cambios al ejecutor, exclusiones, umbrales, tiempos de espera, scripts de migración o smokes ya aprobados. Gate integral requerido antes de publicar; sin commits ni despliegues.
+
+## 21/11/2026 — coherencia del smoke escolar
+
+El smoke EJS conserva el flujo de solicitud y comprueba el encabezado actual Solicitar un espacio, sesión iniciada, cotización individual MXN, 15 días y ausencia de pago/reserva física. Sustituye únicamente el texto histórico sin cuenta, incompatible con Ecclesia 1.1. No se eliminan pruebas ni se reducen controles. Trabajo en rama feat/ajustes-escolares-20261121, sin main, publicación ni despliegue. Evidencia ejecutada y límites en docs del producto hermano.
+
 ## 20 de noviembre de 2026 — regresión P3 front/admin
 
 Se amplía el smoke compilado de tres procesos: enlace real del front al login admin sin cookie administrativa, tanto anónimo como personal/visitante autenticados y tras reiniciar el front. Comprueba formulario 200 sin emitir sesión, login administrativo de VISITANTE rechazado sin sesión nueva y 401/403 del panel conservados. Mantiene todos los controles y límites existentes; no altera el ejecutor del gate ni sus tiempos de espera.

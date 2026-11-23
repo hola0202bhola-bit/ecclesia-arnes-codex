@@ -1,3 +1,19 @@
+## 22/11/2026 — revisión PC-10 de los PR #2
+
+Se conserva el bloqueo global contando vínculos retirados para proteger referencias históricas ajenas. El producto añade una regresión; el arnés mantiene sus 110 casos, ejecutores, exclusiones y umbrales. [Decisión revisable PC-10](../ecclesia-sistema/docs/revision-pc10-pr2-20261122.md). Estado comprobado: PR #2 de ambos repositorios abiertos en borrador hacia main; las notas anteriores sin publicación son históricas. Gate conjunto aprobado: 521/521 producto, 110/110 arnés y 67 escenarios del índice, sin omisiones; 49.65 minutos. Los 332 archivos congelados permanecieron iguales. Resultados completos en la guía y evidencias PC-10 del producto; después solo se actualizó documentación/evidencia. Sin merges ni despliegues.
+
+## 22/11/2026 — indicaciones recientes del profesor
+
+Desvinculación propia con motivo/versión y referencia funeraria pública opcional expresamente autorizada. Matriz agrega solo DELETE propio; nuevas regresiones de contratos, migraciones ausentes y smoke compilado de retirada/referencia pública, conservando cotización privada. No se elimina ninguna prueba ni se reducen controles. Resultados reales en la guía del producto hermano docs/indicaciones-profesor-20261122.md. Sin commits, publicación o despliegue.
+
+## 22/11/2026 — corrección R-01 de contratos
+
+Dos pruebas nuevas en ficha-escolar-contract.test.mjs exigen restricciones verificables de fotoUrl/descripcion en los seis esquemas de ambos contratos, negativos HTTP/userinfo/fragmento/IP/local/blancos y positivos HTTPS/null. Se conservan todas las pruebas anteriores y el gate completo. El resultado ejecutado consta en la guía y estado del producto hermano. No se modifica Zod ni se publica.
+
+## Ajustes escolares del 21/11/2026
+
+Con las carpetas actuales ejecutar `npm run check -- ../ecclesia-sistema`. Rama `feat/ajustes-escolares-20261121`: smoke actualizado al formulario autenticado y aclaraciones funerarias; se conservan todas las pruebas, umbrales y regresiones de índice. [Alcance y resultados del producto](../ecclesia-sistema/docs/ajustes-demostracion-escolar.md). Sin cambios a main ni servicios remotos.
+
 ## 20 de noviembre de 2026 — P3 y validación conjunta
 
 El enlace **Área del personal** del front siempre lleva a `ADMIN_ORIGIN/personal/login`, aunque haya cookie local. En admin se conserva el acceso interno al panel. Dos regresiones fallaron en el href al restaurar temporalmente el código anterior; con la corrección pasaron **82/82** casos de cuentas/despliegue. Se amplían aserciones existentes y smoke, sin eliminar casos ni cambiar permisos. Visitante sigue recibiendo 403 en admin y su login administrativo no crea sesión ni cookie.

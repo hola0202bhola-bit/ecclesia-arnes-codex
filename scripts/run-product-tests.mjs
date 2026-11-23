@@ -454,6 +454,62 @@ try {
     );
     const ofertasPublicas = await (await fetch(ofertasUrl)).json();
     assert.deepEqual(ofertasPublicas.data, [{ tipo: "NICHO" }]);
+    const informacionPublica = {
+      responsablePublico: "Oficina institucional ficticia",
+      costoReferencia: "20.00",
+    };
+    const cambioReferencia = await fetch(ofertasUrl + "/NICHO", {
+      method: "PUT",
+      headers: adminHeaders,
+      body: JSON.stringify({ activo: true, version: 1, ...informacionPublica }),
+    });
+    assert.equal(cambioReferencia.status, 200);
+    assert.deepEqual((await (await fetch(ofertasUrl)).json()).data, [
+      { tipo: "NICHO", ...informacionPublica },
+    ]);
+    const referenciaPublicaHtml = await (
+      await fetch(base + "/iglesias/" + iglesiaId + "/espacios")
+    ).text();
+    assert.ok(referenciaPublicaHtml.includes("20.00 MXN"));
+    assert.ok(
+      referenciaPublicaHtml.includes(informacionPublica.responsablePublico),
+    );
+    const padresUrl =
+      base + "/api/v1/iglesias/" + iglesiaId + "/agenda/sacerdotes";
+    const padreNuevo = await fetch(padresUrl, {
+      method: "POST",
+      headers: adminHeaders,
+      body: JSON.stringify({ nombre: "Padre ficticio retirado smoke" }),
+    });
+    assert.equal(padreNuevo.status, 201);
+    const padreDatos = await padreNuevo.json();
+    const retirada = await fetch(
+      base +
+        "/api/v1/iglesias/" +
+        iglesiaId +
+        "/agenda/asignaciones/" +
+        padreDatos.id,
+      {
+        method: "DELETE",
+        headers: adminHeaders,
+        body: JSON.stringify({
+          version: padreDatos.asignacionVersion,
+          motivo: "Retirada ficticia de demostración",
+        }),
+      },
+    );
+    assert.equal(retirada.status, 200);
+    assert.deepEqual(await retirada.json(), {
+      sacerdoteId: padreDatos.id,
+      activo: false,
+      version: 2,
+    });
+    assert.equal(
+      (
+        await (await fetch(padresUrl, { headers: adminHeaders })).json()
+      ).data.some((p) => p.id === padreDatos.id),
+      false,
+    );
     const solicitudUrl =
       base + "/api/v1/iglesias/" + iglesiaId + "/solicitudes";
     const envio = await fetch(solicitudUrl, {
@@ -548,9 +604,14 @@ try {
       base + "/iglesias/" + iglesiaId + "/espacios",
     );
     assert.equal(espaciosEjs.status, 200);
-    assert.match(await espaciosEjs.text(), /Solicitar sin cuenta/);
+    const espaciosHtml = await espaciosEjs.text();
+    assert.match(espaciosHtml, /Solicitar un espacio/);
+    assert.match(espaciosHtml, /Con su sesión iniciada/);
+    assert.match(espaciosHtml, /cotización individual en MXN/);
+    assert.match(espaciosHtml, /15 días/);
+    assert.match(espaciosHtml, /pago ni reserva física/);
     console.log(
-      "Smoke solicitudes compilado: oferta sin precio 200, alta sin cuenta 201, seguimiento inválido 404/válido 200, cotización exacta/vigencia 200, EJS 200, aceptación 200, cancelación aceptada 409, gestión anónima 401.",
+      "Smoke solicitudes compilado: oferta inicial sin precio 200, referencia pública 20.00 MXN y responsable 200, desvinculación propia 200, alta sin cuenta 201, seguimiento inválido 404/válido 200, cotización exacta/vigencia 200, EJS 200, aceptación 200, cancelación aceptada 409, gestión anónima 401.",
     );
     console.log(
       "Smoke financiero compilado: captura 201, corrección 200, duplicado/versión 409, total exacto 30 centavos, historial y EJS privados 200, anónimo 401.",
@@ -613,6 +674,9 @@ try {
           },
           solicitudes: {
             ofertaPublica: 200,
+            costoReferenciaPublico: "20.00",
+            responsablePublico: true,
+            desvinculacionPropia: 200,
             alta: 201,
             seguimientoInvalido: 404,
             seguimientoValido: 200,

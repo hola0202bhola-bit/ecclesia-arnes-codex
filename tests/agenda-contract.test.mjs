@@ -35,7 +35,7 @@ test("RF16–21: rutas de agenda ejecutables coinciden y no amplían permisos", 
         );
         assert.ok(op["x-pending"].includes("PC-12"));
       }
-  assert.equal(n, 11);
+  assert.equal(n, 12);
 });
 const id = "60000000-0000-4000-8000-000000000001";
 const horario = {

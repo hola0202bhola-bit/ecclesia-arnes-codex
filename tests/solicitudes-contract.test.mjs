@@ -64,7 +64,7 @@ test("RF25–31 contrato real coincide, roles mínimos y credencial separada de 
       actual.components.schemas[name],
     );
 });
-test("RF25/26 contrato impide precio público y campos de identidad/estado en alta", () => {
+test("RF25/26 contrato impide cotización individual pública y campos de identidad/estado en alta", () => {
   assert.equal(valida("EspacioPublico", { tipo: "NICHO" }), true);
   assert.equal(
     valida("EspacioPublico", { tipo: "NICHO", precio: "1.00" }),
