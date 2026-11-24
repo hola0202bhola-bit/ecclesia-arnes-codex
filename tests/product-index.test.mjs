@@ -13,6 +13,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
+import { runFixtureGit } from "../scripts/git-fixture.mjs";
 const home = fileURLToPath(new URL("..", import.meta.url));
 const source =
   process.env.ECCLESIA_PROJECT ??
@@ -25,7 +26,7 @@ test(
     const repo = join(root, "project");
     const logs = [];
     function exec(args) {
-      const r = spawnSync("git", args, {
+      const r = runFixtureGit(args, {
         cwd: repo,
         encoding: "utf8",
         maxBuffer: 64 * 1024 * 1024,

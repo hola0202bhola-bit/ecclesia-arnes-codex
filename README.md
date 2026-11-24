@@ -188,3 +188,9 @@ La instalación en esta revisión notificó avisos moderados de la cadena de ESL
 Soporte técnico contrastado con la documentación primaria de dependency-cruiser: https://github.com/sverweij/dependency-cruiser/blob/main/doc/options-reference.md (tsPreCompilationDeps requiere TypeScript resoluble junto a la herramienta).
 
 El runner elimina NODE_TEST_CONTEXT heredado al iniciar sus pruebas: un hook invocado desde una regresión debe ejecutar su suite interna, sin que node:test la omita por contexto recursivo. Las regresiones lo comprueban. Se rechazan además colisiones de mayúsculas y nombres no materializables de forma portable; nunca se colapsan dos blobs distintos en una misma ruta de Windows.
+
+## 23/11/2026 — corrección de rutas nativas del hook
+
+El bootstrap resuelve la ruta relativa con Node desde la raíz de trabajo de Git; evita recorrer con sh los padres de TEMP montado como /tmp. Regresión nueva con TEMP separado, espacios y apóstrofo; controles anteriores conservados. [Causa, preparación limpia y límites](docs/git-temporal-windows-20261123.md). Los estados de PR #2 abiertos indicados arriba son históricos: su código ya forma parte de main 54a50eb. Esta corrección no fusiona ni despliega.
+
+La preparación de índices sintéticos registra y recupera únicamente el rechazo transitorio exacto de objetos Git en Windows, con cuatro intentos máximos. Los hooks y verificaciones nunca se repiten para ocultar fallos; permisos de fuentes, locks y errores desconocidos abortan inmediatamente. Se conservan el intento íntegro fallido y las reproducciones; el resultado final debe identificarse por su propia ejecución.

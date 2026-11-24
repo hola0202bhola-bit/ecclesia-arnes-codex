@@ -14,16 +14,22 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
+import { runFixtureGit } from "../scripts/git-fixture.mjs";
 const home = fileURLToPath(new URL("..", import.meta.url));
 const source =
   process.env.ECCLESIA_PROJECT ??
   fileURLToPath(new URL("../../proyecto-ecclesia", import.meta.url));
-function exec(cwd, cmd, args) {
-  const r = spawnSync(cmd, args, {
+function exec(cwd, cmd, args, env = process.env) {
+  const options = {
     cwd,
     encoding: "utf8",
     maxBuffer: 32 * 1024 * 1024,
-  });
+    env,
+  };
+  const r =
+    cmd === "git"
+      ? runFixtureGit(args, options)
+      : spawnSync(cmd, args, options);
   if (r.error) throw r.error;
   return r;
 }
@@ -31,8 +37,8 @@ function ok(r) {
   assert.equal(r.status, 0, r.stdout + r.stderr);
   return r.stdout;
 }
-function fixture(action) {
-  const root = mkdtempSync(join(tmpdir(), "ecclesia-hook-"));
+function fixture(action, tempRoot = tmpdir()) {
+  const root = mkdtempSync(join(tempRoot, "ecclesia-hook-"));
   const repo = join(root, "project");
   try {
     cpSync(source, repo, {
@@ -77,10 +83,10 @@ function fixture(action) {
       mkdirSync(dirname(join(repo, p)), { recursive: true });
       writeFileSync(join(repo, p), b);
     };
-    const hook = () => {
+    const hook = (env = process.env) => {
       const before = ok(git(["ls-files", "--stage", "-z"]));
       const status = ok(git(["status", "--porcelain", "-z"]));
-      const r = git(["hook", "run", "pre-commit"]);
+      const r = exec(repo, "git", ["hook", "run", "pre-commit"], env);
       assert.doesNotMatch(
         r.stdout + r.stderr,
         /recursively.*skipping/,
@@ -135,6 +141,17 @@ function fixture(action) {
 }
 test("H03 índice válido permite hook real, sin commit", () =>
   fixture(({ hook }) => ok(hook())));
+
+test("H03 hook resuelve rutas nativas con TEMP separado y espacios", () => {
+  const temp = mkdtempSync(join(tmpdir(), "ecclesia temporal ' "));
+  try {
+    fixture(({ hook }) => {
+      ok(hook({ ...process.env, TEMP: temp, TMP: temp }));
+    }, temp);
+  } finally {
+    rmSync(temp, { recursive: true, force: true });
+  }
+});
 test("H03 rechaza TS inválido staged aunque se elimine solo de working tree", () =>
   fixture(({ repo, put, git, hook }) => {
     put("src/modules/a/domain/invalid.ts", "esto no es TypeScript {{{");
