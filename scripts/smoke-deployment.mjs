@@ -25,8 +25,13 @@ export async function smokeDeployment(env) {
   const bases = Object.fromEntries(
     Object.entries(ports).map(([k, p]) => [k, `http://127.0.0.1:${p}`]),
   );
-  async function checkPersonalLink(html) {
+  async function checkPersonalLink(html, personal = true, cuenta = true) {
     const link = html.match(/class="nav-personal" href="([^"]+)"/);
+    assert.equal(html.includes('href="/cuenta/perfil">Mi cuenta</a>'), cuenta);
+    if (!personal) {
+      assert.equal(link, null);
+      return;
+    }
     assert.equal(link?.[1], bases.admin + "/personal/login");
     // fetch no hereda cookies: reproduce un salto al host admin sin su sesión.
     const destination = await fetch(link[1], { redirect: "manual" });
@@ -124,6 +129,8 @@ export async function smokeDeployment(env) {
     assert.equal(mustLogin.headers.get("location"), "/cuenta/login");
     await checkPersonalLink(
       await (await fetch(bases.front + "/cuenta/login")).text(),
+      false,
+      false,
     );
     const redirect = await fetch(
       bases.front + "/personal/login?clave=privada",
@@ -221,7 +228,7 @@ export async function smokeDeployment(env) {
     });
     assert.equal(profile.status, 200);
     const profileHtml = await profile.text();
-    await checkPersonalLink(profileHtml);
+    await checkPersonalLink(profileHtml, false);
     assert.equal((await fetch(bases.admin + "/personal")).status, 401);
     const sessionsBefore = await client.query(
       'SELECT count(*)::int AS total FROM "Sesion"',
@@ -289,7 +296,7 @@ export async function smokeDeployment(env) {
     assert.equal(restored.status, 200);
     const restoredHtml = await restored.text();
     assert.match(restoredHtml, /Visitante del smoke/);
-    await checkPersonalLink(restoredHtml);
+    await checkPersonalLink(restoredHtml, false);
     console.log(
       "Smoke cuentas 1.1: registro VISITANTE, login front, perfil propio, navegación al login admin sin sesión compartida, admin 403 y reinicio persistente aprobados.",
     );
